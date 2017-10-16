@@ -14,6 +14,11 @@ var requestOpts = {
     uri: 'http://api.sl.se/api2/realtimedeparturesV4.json?key=' + conf.key + '&siteid=5812&timewindow=60',
 }
 
+function timeformat(date) {
+    function z(n) { return (n<10?'0':'') + n; }
+    return z(date.getHours()) + ':' + z(date.getMinutes());
+}
+
 app.get('/', function (req, res) {
     request(requestOpts, function(err, response, body) {
         if (!err && response.statusCode == 200) {
@@ -29,11 +34,18 @@ app.get('/', function (req, res) {
                 var date1 = new Date(buses[i].TimeTabledDateTime);
                 var date2 = new Date(buses[i].ExpectedDateTime);
 
+                var time1 = timeformat(date1);
+                var time2 = timeformat(date2);
+
                 var bus = { number: buses[i].LineNumber, destination: buses[i].Destination,
-                     time: date1.toLocaleTimeString(), display: buses[i].DisplayTime };
+                     time: time1, timeExpected: time2 };
                 
-                if (date2.getTime() != date1.getTime()) {
-                    bus.timeExpected = date2.toLocaleTimeString();
+                if (buses[i].DisplayTime != time2) {
+                    bus.display = buses[i].DisplayTime;
+                }
+                
+                if (time1 != time2) {
+                    bus.delayed = true
                 }
 
                 if (buses[i].JourneyDirection == 1) {

@@ -6,12 +6,11 @@
     <h3>Bussar västerut</h3>
     <ul class="w3-ul w3-hoverable">
     {{#buses1}}
-    <li class="w3-hover-sand">Buss {{number}} mot {{destination}} - {{display}}<br>
-     
-        {{#if expected}}
-        <div class="w3-orange"><strong>Avgång försenad {{timeExpected}} ({{time}})</strong></div>
+    <li class="w3-hover-sand"><i class="fa fa-bus w3-text-orange" area-hidden=true></i> Buss {{number}} - {{time}} ({{display}})<br>
+        {{#if delayed}}
+        <div class="w3-orange"><strong>Avgång mot {{destination}} försenad. Ny tid {{timeExpected}} ({{time}})</strong></div>
         {{else}}
-        <div class="w3-small">{{time}}</div>
+        <div class="w3-small">Mot {{destination}} {{time}}</div>
         {{/if}}
     </li>
     {{/buses1}}
@@ -25,12 +24,11 @@
     <h3>Bussar österut</h3>
     <ul class="w3-ul w3-hoverable">
     {{#buses2}}
-    <li class="w3-hover-sand">Buss {{number}} mot {{destination}} - {{display}}<br>
-     
-        {{#if expected}}
-        <div class="w3-orange"><strong>Avgång försenad {{timeExpected}} ({{time}})</strong></div>
+    <li class="w3-hover-sand"><i class="fa fa-bus w3-text-orange" area-hidden=true></i> Buss {{number}} - {{time}} ({{display}})<br>
+        {{#if delayed}}
+        <div class="w3-orange"><strong>Avgång mot {{destination}} försenad. Ny tid {{timeExpected}} ({{time}})</strong></div>
         {{else}}
-        <div class="w3-small">{{time}}</div>
+        <div class="w3-small">Mot {{destination}} {{time}}</div>
         {{/if}}
     </li>
     {{/buses2}}
