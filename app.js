@@ -22,7 +22,8 @@ app.get('/', function (req, res) {
             var str = ''
 
             var buses = data.ResponseData.Buses
-            var busList = []
+            var busList1 = []
+            var busList2 = []
             for (var i=0; i < buses.length; ++i)
             {
                 var date1 = new Date(buses[i].TimeTabledDateTime);
@@ -35,10 +36,15 @@ app.get('/', function (req, res) {
                     bus.timeExpected = date2.toLocaleTimeString();
                 }
 
-                busList.push(bus)
+                if (buses[i].JourneyDirection == 1) {
+                    busList1.push(bus)
+                }
+                else {
+                    busList2.push(bus)
+                }
             }
             res.render('busses', { title: "Bondebussen", checktime: date.toLocaleTimeString(),
-                                   buses: busList})
+                                   buses1: busList1, buses2:busList2})
         }
           else {
             console.log("Error: " + err.message);

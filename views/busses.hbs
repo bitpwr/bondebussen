@@ -1,22 +1,44 @@
 <h1>{{title}}</h1>
 <p>Bussar som avgår från Bondevägen klockan {{checktime}}.</p>
 
+<div class="w3-row">
+  <div class="w3-half w3-container">
+    <h3>Bussar västerut</h3>
+    <ul class="w3-ul w3-hoverable">
+    {{#buses1}}
+    <li class="w3-hover-sand">Buss {{number}} mot {{destination}} - {{display}}<br>
+     
+        {{#if expected}}
+        <div class="w3-orange"><strong>Avgång försenad {{timeExpected}} ({{time}})</strong></div>
+        {{else}}
+        <div class="w3-small">{{time}}</div>
+        {{/if}}
+    </li>
+    {{/buses1}}
+    {{^buses1}}
+    <i>Det går inga bussar den närmsta timmen.</i>
+    {{/buses1}}
 
-<ul class="w3-ul w3-hoverable">
-{{#buses}}
-<li class="w3-hover-sand">Buss {{number}} mot {{destination}} - {{display}}<br>
- 
-    {{#if expected}}
-    <div class="w3-orange"><strong>Avgång försenad {{timeExpected}} ({{time}})</strong></div>
-    {{else}}
-    <div class="w3-small">{{time}}</div>
-    {{/if}}
-</li>
-{{/buses}}
-{{^buses}}
-<i>Det går inga bussar den närmsta timmen.</i>
-{{/buses}}
+    </ul>
+  </div>
+  <div class="w3-half w3-container">
+    <h3>Bussar österut</h3>
+    <ul class="w3-ul w3-hoverable">
+    {{#buses2}}
+    <li class="w3-hover-sand">Buss {{number}} mot {{destination}} - {{display}}<br>
+     
+        {{#if expected}}
+        <div class="w3-orange"><strong>Avgång försenad {{timeExpected}} ({{time}})</strong></div>
+        {{else}}
+        <div class="w3-small">{{time}}</div>
+        {{/if}}
+    </li>
+    {{/buses2}}
+    {{^buses2}}
+    <i>Det går inga bussar den närmsta timmen.</i>
+    {{/buses2}}
 
-</ul>
-
+    </ul>
+  </div>
+</div>
 
