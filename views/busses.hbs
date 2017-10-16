@@ -1,0 +1,22 @@
+<h1>{{title}}</h1>
+<p>Bussar som avgår från Bondevägen klockan {{checktime}}.</p>
+
+
+<ul class="w3-ul w3-hoverable">
+{{#buses}}
+<li class="w3-hover-sand">Buss {{number}} mot {{destination}} - {{display}}<br>
+ 
+    {{#if expected}}
+    <div class="w3-orange"><strong>Avgång försenad {{timeExpected}} ({{time}})</strong></div>
+    {{else}}
+    <div class="w3-small">{{time}}</div>
+    {{/if}}
+</li>
+{{/buses}}
+{{^buses}}
+<i>Det går inga bussar den närmsta timmen.</i>
+{{/buses}}
+
+</ul>
+
+
