@@ -23,6 +23,14 @@ app.get('/', function (req, res) {
     request(requestOpts, function(err, response, body) {
         if (!err && response.statusCode == 200) {
             var data = JSON.parse(body);
+
+            if (data.StatusCode != 0)
+            {
+                console.log("Statuscode: " + data.StatusCode + ", " + data.Message);
+                res.send('Sorry, an error ocurred: ' + data.Message)
+                return;
+            }
+
             var date = new Date(data.ResponseData.LatestUpdate);
             var str = ''
 
