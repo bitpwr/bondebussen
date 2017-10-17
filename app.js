@@ -4,6 +4,7 @@ var request = require('request')
 var path = require('path')
 var hbs = require('express-handlebars')
 var favicon = require('serve-favicon')
+var morgan = require('morgan')
 
 var app = express();
 
@@ -13,8 +14,30 @@ app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout',
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+
+// setup logging
+const logformat = ':date[iso] :remote-addr :method :url :status :res[content-length] :response-time ms :user-agent'
+app.use(morgan(logformat, {
+    skip: function (req, res) {
+        return res.statusCode < 400
+    }, stream: process.stderr
+}));
+
+app.use(morgan(logformat, {
+    skip: function (req, res) {
+        return res.statusCode >= 400
+    }, stream: process.stdout
+}));
+
 var requestOpts = {
-    uri: 'http://api.sl.se/api2/realtimedeparturesV4.json?key=' + conf.key + '&siteid=5812&timewindow=60',
+    uri: 'http://api.sl.se/api2/realtimedeparturesV4.json',
+    method: 'GET',
+    qs: {
+        key: conf.key,
+        siteid: 5812,
+        timewindow: 60
+    },
+    json: true
 }
 
 function timeformat(date) {
@@ -25,7 +48,8 @@ function timeformat(date) {
 app.get('/', function (req, res) {
     request(requestOpts, function(err, response, body) {
         if (!err && response.statusCode == 200) {
-            var data = JSON.parse(body);
+            // we get a json object directly
+            var data = body;
 
             if (data.StatusCode != 0)
             {
@@ -69,8 +93,11 @@ app.get('/', function (req, res) {
             res.render('busses', { title: "Bondebussen", checktime: date.toLocaleTimeString(),
                                    buses1: busList1, buses2:busList2})
         }
-          else {
+        else {
             console.log("Error: " + err.message);
+            if (response) {
+                console.log("StatusCode: " + response.statusCode)
+            }
             res.send('Sorry, no response from SL. Please refresh your page and try again.')
         }
     })
