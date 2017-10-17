@@ -3,8 +3,11 @@ const conf = require('./config.json')
 var request = require('request')
 var path = require('path')
 var hbs = require('express-handlebars')
+var favicon = require('serve-favicon')
 
-const app = express();
+var app = express();
+
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout',
                        layoutsDir: __dirname + '/views/layouts/'}));
 app.set('views', path.join(__dirname, 'views'));
@@ -68,7 +71,7 @@ app.get('/', function (req, res) {
         }
           else {
             console.log("Error: " + err.message);
-            res.send('Sorry, an error ocurred')
+            res.send('Sorry, no response from SL. Please refresh your page and try again.')
         }
     })
 })

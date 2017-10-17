@@ -6,12 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Bitpwr",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.15.4",
     "express-handlebars": "^3.0.0",
     "path": "^0.12.7",
-    "request": "^2.82.0"
+    "request": "^2.82.0",
+    "serve-favicon": "^2.4.5"
   }
 }
