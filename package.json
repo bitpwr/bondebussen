@@ -1,10 +1,14 @@
 {
-  "name": "Bondebussen",
+  "name": "bondebussen",
   "version": "1.0.0",
-  "description": "Busses from Bondevägen",
+  "description": "Busses from Bondevägen in Järfälla",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+      "type" : "git",
+      "url" : "https://github.com/bitpwr/bondebussen"
   },
   "author": "Bitpwr",
   "license": "MIT",
@@ -14,6 +18,7 @@
     "morgan": "^1.9.0",
     "path": "^0.12.7",
     "request": "^2.82.0",
+    "requestretry": "^1.12.2",
     "serve-favicon": "^2.4.5"
   }
 }

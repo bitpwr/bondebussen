@@ -1,6 +1,6 @@
 const express = require('express')
 const conf = require('./config.json')
-var request = require('request')
+var request = require('requestretry')
 var path = require('path')
 var hbs = require('express-handlebars')
 var favicon = require('serve-favicon')
@@ -16,7 +16,12 @@ app.set('view engine', 'hbs');
 
 
 // setup logging
-const logformat = ':date[iso] :remote-addr :method :url :status :res[content-length] :response-time ms :user-agent'
+// get real ip if passed by nginx
+morgan.token('remote-ip', function (req) {
+    return req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+});
+
+const logformat = ':date[iso] :remote-ip :method :url :status :res[content-length] :response-time ms :user-agent'
 app.use(morgan(logformat, {
     skip: function (req, res) {
         return res.statusCode < 400
@@ -29,6 +34,7 @@ app.use(morgan(logformat, {
     }, stream: process.stdout
 }));
 
+// setup realtimedepartures request options
 var requestOpts = {
     uri: 'http://api.sl.se/api2/realtimedeparturesV4.json',
     method: 'GET',
@@ -37,7 +43,10 @@ var requestOpts = {
         siteid: 5812,
         timewindow: 60
     },
-    json: true
+    json: true,
+    maxAttempts: 3,
+    retryDelay: 3000,
+    retryStrategy: request.RetryStrategies.HTTPOrNetworkError
 }
 
 function timeformat(date) {
@@ -54,7 +63,7 @@ app.get('/', function (req, res) {
             if (data.StatusCode != 0)
             {
                 console.log("Statuscode: " + data.StatusCode + ", " + data.Message);
-                res.send('Sorry, an error ocurred: ' + data.Message)
+                res.render('error', { message: data.Message });
                 return;
             }
 
@@ -98,7 +107,7 @@ app.get('/', function (req, res) {
             if (response) {
                 console.log("StatusCode: " + response.statusCode)
             }
-            res.send('Sorry, no response from SL. Please refresh your page and try again.')
+            res.render('error', { message: 'Sorry, no response from SL. Please refresh your page and try again.' });
         }
     })
 })
