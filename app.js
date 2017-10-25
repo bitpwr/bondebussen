@@ -45,7 +45,7 @@ var requestOpts = {
     },
     json: true,
     maxAttempts: 3,
-    retryDelay: 3000,
+    retryDelay: 100,
     retryStrategy: request.RetryStrategies.HTTPOrNetworkError
 }
 

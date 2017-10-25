@@ -7,14 +7,7 @@
     <h3>Bussar västerut</h3>
     <ul class="w3-ul w3-hoverable">
     {{#buses1}}
-    <li class="w3-hover-sand"><i class="fa fa-bus w3-text-orange" area-hidden=true></i> 
-        Buss {{number}} - {{timeExpected}} {{#if display}} ({{display}}) {{/if}}<br>
-        {{#if delayed}}
-        <div class="w3-sand">Mot {{destination}} {{time}} försenad till {{timeExpected}}.</div>
-        {{else}}
-        <div class="w3-small">{{destination}}</div>
-        {{/if}}
-    </li>
+        {{> busli}}
     {{/buses1}}
     {{^buses1}}
     <i>Det går inga bussar den närmsta timmen.</i>
@@ -26,14 +19,7 @@
     <h3>Bussar österut</h3>
     <ul class="w3-ul w3-hoverable">
     {{#buses2}}
-    <li class="w3-hover-sand"><i class="fa fa-bus w3-text-orange" area-hidden=true></i> 
-        Buss {{number}} - {{timeExpected}} {{#if display}} ({{display}}) {{/if}}<br>
-        {{#if delayed}}
-        <div class="w3-sand">Mot {{destination}} {{time}} försenad till {{timeExpected}}.</div>
-        {{else}}
-        <div class="w3-small">{{destination}}</div>
-        {{/if}}
-    </li>
+        {{> busli}}
     {{/buses2}}
     {{^buses2}}
     <i>Det går inga bussar den närmsta timmen.</i>
