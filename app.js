@@ -99,7 +99,7 @@ app.get('/', function (req, res) {
                     busList2.push(bus)
                 }
             }
-            res.render('busses', { title: "Bondebussen | Busstider i Järfälla", checktime: date.toLocaleTimeString(),
+            res.render('busses', { title: "Bondebussen | Busstider vid Bondevägen, Järfälla", checktime: date.toLocaleTimeString(),
                                    buses1: busList1, buses2:busList2})
         }
         else {
@@ -113,7 +113,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/about', function (req, res) {
-    res.render('about', { title: "Bondebussen | Vad är detta" });
+    res.render('about', { title: "Bondebussen | Varför ännu en sida med busstider" });
 });
 
 // catch 404 and forward to error handler
@@ -126,7 +126,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
-        title: "Bondevägen | Nu blev det fel"
+        title: "Bondevägen | Nu blev det fel",
         message: err.message,
         error: {}
     });
