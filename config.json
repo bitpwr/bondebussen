@@ -1,5 +1,6 @@
 {
-    "key":  "enteryourkeyhere",
-    "port": 4141
+    "key":  "yourslkey",
+    "port": 4141,
+    "gtag": "yourgoogleanalyticscode"
 }
 
