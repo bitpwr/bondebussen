@@ -1,0 +1,18 @@
+<p class="w3-container">Bussar avgående från {{name}} klockan {{checktime}}.</p>
+
+<div class="w3-row">
+    {{#stops}}
+        <div class="w3-half w3-container">
+            <h4>Mot {{destinations}}</h4>
+            <ul class="w3-ul w3-hoverable">
+            {{#buses}}
+                {{> busli}}
+            {{/buses}}
+            </ul>
+        </div>
+    {{/stops}}
+    {{^stops}}
+    <i>Det går inga bussar den närmsta timmen eller så finns inte hållplatsen.</i>
+    {{/stops}}
+</div>
+
