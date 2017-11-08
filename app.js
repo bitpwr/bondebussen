@@ -122,6 +122,11 @@ function convertSlRealtime(data) {
         }
     }
 
+    // create stop destination texts
+    for (var i = 0; i < out.stops.length; ++i) {
+        out.stops[i].destinationText = out.stops[i].destinations.join(", ");
+    }
+
     return out;
 }
 
@@ -144,7 +149,7 @@ app.get('/', function (req, res) {
                 res.render('error', {message: 'Det går inga bussar den närmsta timmen eller så finns inte hållplatsen'});
             }
             else {
-                res.render('buses2', out)
+                res.render('buses', out)
             }
         }
         else {
@@ -165,7 +170,7 @@ app.get('/stop/:id', function(req, res) {
         if (!err && response.statusCode == 200) {
             // check sl error
             out = convertSlRealtime(body);
-            res.render('buses2', out)
+            res.render('buses', out)
         }
     });
 })
