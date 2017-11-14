@@ -1,6 +1,6 @@
 # Bondebussen
 
-Web page based on node.js and express showing current time table for buses in Viksjö, Järfälla.
+Web page based on node.js and express showing current time table for buses in Stockholm.
 In particular, busses from Bondevägen.
 
 ## Configuration

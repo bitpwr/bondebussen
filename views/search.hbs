@@ -1,0 +1,30 @@
+
+<form class="w3-center" action="/search" method="get">
+    <div class="w3-bar w3-panel">
+    <input class="w3-bar-item w3-input w3-border w3-round" name="stop" type="search" placeholder="Hållplats" id="search"/>
+    <button type="submit" class="w3-bar-item w3-hover-white w3-text-orange" value="Sök"><i class="fa fa-search" area-hidden=true></i></button>
+    </div>
+</form>
+
+{{#if searchstring}}
+<p class="w3-container">Sökresultat för: <i>'{{searchstring}}'</i></p>
+{{/if}}
+
+{{#if stops.length}}
+<div class="w3-container">
+    <ul class="w3-ul w3-hoverable">
+    {{#stops}}
+        <li class="w3-hover-light-gray"><i class="fa fa-map-marker w3-text-orange" area-hidden=true></i> 
+        <a href="/stop/{{id}}">{{name}}</a>
+    </li>
+    {{/stops}}
+    {{^stops}}
+    <i>Hittade inga hållplatser.</i>
+    {{/stops}}
+    </ul>
+</div>
+{{/if}}
+
+<script type="text/javascript">
+    document.getElementById("search").focus(); 
+</script>

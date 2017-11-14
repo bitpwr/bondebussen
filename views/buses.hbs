@@ -1,8 +1,9 @@
+{{#if stops.length}}
 <p class="w3-container">Bussar avgående från {{name}} klockan {{checktime}}.</p>
-
+{{/if}}
 <div class="w3-row">
     {{#stops}}
-        <div class="w3-half w3-container">
+        <div id="col" class="w3-container">
             <h4>Mot {{destinationText}}</h4>
             <ul class="w3-ul w3-hoverable">
             {{#buses}}
@@ -15,4 +16,14 @@
     <i>Det går inga bussar den närmsta timmen eller så finns inte hållplatsen.</i>
     {{/stops}}
 </div>
+
+<script type="text/javascript">
+    if ({{stops.length}} == 2) {
+        w3.addClass('#col','w3-half')
+    }
+    else if ({{stops.length}} >= 3) {
+        w3.addClass('#col','w3-third')
+    }
+    
+</script>
 

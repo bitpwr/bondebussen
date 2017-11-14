@@ -50,7 +50,22 @@ var requestOpts = {
     },
     json: true,
     maxAttempts: 3,
-    retryDelay: 100,
+    retryDelay: 10,
+    retryStrategy: request.RetryStrategies.HTTPOrNetworkError
+}
+
+var stopOpts = {
+    uri: 'http://api.sl.se/api2/typeahead.json',
+    method: 'GET',
+    qs: {
+        key: conf.keyPlats,
+        searchstring: "",
+        stationsonly: true,
+        maxresults: 20
+    },
+    json: true,
+    maxAttempts: 3,
+    retryDelay: 10,
     retryStrategy: request.RetryStrategies.HTTPOrNetworkError
 }
 
@@ -60,7 +75,7 @@ function timeformat(date) {
 }
 
 function convertSlRealtime(data) {
-    var out = { title: "Bondebussen | Busstider i Järfälla",
+    var out = { title: "Busstider i Stockholm",
                 gtag: conf.gtag };
 
     var date = new Date(data.ResponseData.LatestUpdate);
@@ -163,20 +178,65 @@ app.get('/', function (req, res) {
 })
 
 app.get('/stop/:id', function(req, res) {
-    console.log("Get busses at stop " + req.params.id)
     opts = requestOpts;
     opts.qs.siteid = req.params.id;
+
     request(requestOpts, function(err, response, body) {
         if (!err && response.statusCode == 200) {
-            // check sl error
             out = convertSlRealtime(body);
-            res.render('buses', out)
+            out.title = "Busstider från " + out.name;
+            res.render('buses', out);
+        }
+        else {
+            console.log("Error in /stop: " + err.message);
+            if (response) {
+                console.log("StatusCode: " + response.statusCode)
+            }
+            res.render('error', { message: 'Sorry, no response from SL. Please refresh your page and try again.' });
         }
     });
 })
 
+app.get('/search', (req, res) => {
+    if (typeof req.query.stop === 'undefined' ||
+        req.query.stop == "") {
+        console.log("NO STOP GIVEN")
+        stopOpts.qs.searchstring = "";
+        res.render('search', {title: "Sök efter hållplats"});
+    }
+    else {
+        stopOpts.qs.searchstring = req.query.stop;
+
+        request(stopOpts, function(err, response, data) {
+            if (!err && response.statusCode == 200) {
+                if (data.StatusCode != 0)
+                {
+                    console.log("Statuscode: " + data.StatusCode + ", " + data.Message);
+                    res.render('error', { message: data.Message });
+                    return;
+                }
+
+                var stops = [];
+                for (var i = 0; i < data.ResponseData.length; ++i) {
+                    s = data.ResponseData[i];
+                    stops.push({name: s.Name, id: s.SiteId})
+                }
+
+                res.render('search', {title: "Sökresultat för " + req.query.stop, searchstring: req.query.stop, stops});
+            }
+            else {
+            console.log("Error in /search: " + err.message);
+            if (response) {
+                console.log("StatusCode: " + response.statusCode)
+            }
+            res.render('error', { message: 'Sorry, no response from SL. Please refresh your page and try again.' });
+            }
+        });
+    }
+})
+
 app.get('/about', function (req, res) {
-    res.render('about', { title: "Bondebussen | Varför ännu en sida med busstider",
+    res.render('about', { title: "Varför ännu en sida med busstider",
                           gtag: conf.gtag
     });
 });
@@ -191,7 +251,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
-        title: "Bondevägen | Nu blev det fel",
+        title: "Nu blev det fel",
         message: err.message,
         error: {}
     });
