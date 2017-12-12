@@ -43,9 +43,9 @@ var requestOpts = {
         siteid: 5812,
         timewindow: 60,
         bus: true,
-        metro: false,
-        train: false,
-        tram: false,
+        metro: true,
+        train: true,
+        tram: true,
         ship: false
     },
     json: true,
@@ -74,6 +74,56 @@ function timeformat(date) {
     return z(date.getHours()) + ':' + z(date.getMinutes());
 }
 
+function parseDeparture(stops, slData) {
+    var date1 = new Date(slData.TimeTabledDateTime);
+    var date2 = new Date(slData.ExpectedDateTime);
+
+    var time1 = timeformat(date1);
+    var time2 = timeformat(date2);
+
+    var departure = { number: slData.LineNumber, destination: slData.Destination,
+            time: time1, timeExpected: time2 };
+
+    if (slData.DisplayTime != time2) {
+        departure.display = slData.DisplayTime;
+    }
+
+    if (time1 != time2) {
+        departure.delayed = true
+    }
+
+    var stop = slData.StopPointNumber;
+
+    var found = false;
+    for (var j = 0; j < stops.length; ++j) {
+        var s = stops[j];
+        if (s.stop == stop) {
+            found = true;
+            s.departures.push(departure);
+            // check if destination exists
+            var destFound = false;
+            for (var x = 0; x < s.destinations.length; ++x) {
+                if (s.destinations[x] == departure.destination) {
+                    destFound = true;
+                    break;
+                }
+            }
+            if (!destFound) {
+                s.destinations.push(departure.destination);
+            }
+            break;
+        }
+    }
+
+    if (!found) {
+        var s = {stop: stop, destinations: [departure.destination], departures: [departure]};
+        stops.push(s);
+  
+    }
+    
+    return slData.StopAreaName;
+};
+
 function convertSlRealtime(data) {
     var out = { title: "Busstider i Stockholm",
                 gtag: conf.gtag };
@@ -81,67 +131,64 @@ function convertSlRealtime(data) {
     var date = new Date(data.ResponseData.LatestUpdate);
     out.checktime = date.toLocaleTimeString();
 
-    out.stops = [];
+    out.busStops = [];
+    out.trainStops = [];
+    out.tramStops = [];
+    out.metroStops = [];
 
     var buses = data.ResponseData.Buses
     for (var i=0; i < buses.length; ++i)
     {
-        var date1 = new Date(buses[i].TimeTabledDateTime);
-        var date2 = new Date(buses[i].ExpectedDateTime);
-
-        var time1 = timeformat(date1);
-        var time2 = timeformat(date2);
-
-        var bus = { number: buses[i].LineNumber, destination: buses[i].Destination,
-             time: time1, timeExpected: time2 };
-
-        if (buses[i].DisplayTime != time2) {
-            bus.display = buses[i].DisplayTime;
+        var station = parseDeparture(out.busStops, buses[i]);
+        if (!out.busStation) {
+            out.busStation = station
         }
+    }
 
-        if (time1 != time2) {
-            bus.delayed = true
+    var trains = data.ResponseData.Trains
+    for (var i=0; i < trains.length; ++i)
+    {
+        var station = parseDeparture(out.trainStops, trains[i]);
+        if (!out.trainStation) {
+            out.trainStation = station
         }
+    }
 
-        var stop = buses[i].StopPointNumber;
-
-        var found = false;
-        for (var j = 0; j < out.stops.length; ++j) {
-            var s = out.stops[j];
-            if (s.stop == stop) {
-                found = true;
-                s.buses.push(bus);
-                // check if destination exists
-                var destFound = false;
-                for (var x = 0; x < s.destinations.length; ++x) {
-                    if (s.destinations[x] == bus.destination) {
-                        destFound = true;
-                        break;
-                    }
-                }
-                if (!destFound) {
-                    s.destinations.push(bus.destination);
-                }
-                break;
-            }
+    var trams = data.ResponseData.Trams
+    for (var i=0; i < trams.length; ++i)
+    {
+        var station = parseDeparture(out.tramStops, trams[i]);
+        if (!out.tramStation) {
+            out.tramStation = station
         }
+    }
 
-        if (!found) {
-            var s = {stop: stop, destinations: [bus.destination], buses: []};
-            s.buses.push(bus);
-            out.stops.push(s);
-            
-            if (!out.name) {
-                out.name = buses[i].StopAreaName
-            }
+    var metros = data.ResponseData.Metros
+    for (var i=0; i < metros.length; ++i)
+    {
+        var station = parseDeparture(out.metroStops, metros[i]);
+        if (!out.metrosStation) {
+            out.metrosStation = station
         }
     }
 
     // create stop destination texts
-    for (var i = 0; i < out.stops.length; ++i) {
-        out.stops[i].destinationText = out.stops[i].destinations.join(", ");
+    for (var i = 0; i < out.busStops.length; ++i) {
+        out.busStops[i].destinationText = out.busStops[i].destinations.join(", ");
     }
-
+    
+    for (var i = 0; i < out.trainStops.length; ++i) {
+        out.trainStops[i].destinationText = out.trainStops[i].destinations.join(", ");
+    }
+    
+    for (var i = 0; i < out.tramStops.length; ++i) {
+        out.tramStops[i].destinationText = out.tramStops[i].destinations.join(", ");
+    }
+    
+    for (var i = 0; i < out.metroStops.length; ++i) {
+        out.metroStops[i].destinationText = out.metroStops[i].destinations.join(", ");
+    }
+    
     return out;
 }
 
@@ -160,7 +207,7 @@ app.get('/', function (req, res) {
 
             out = convertSlRealtime(data);
             
-            if (out.stops.length == 0) {
+            if (out.busStops.length == 0) {
                 res.render('error', {message: 'Det går inga bussar den närmsta timmen eller så finns inte hållplatsen'});
             }
             else {

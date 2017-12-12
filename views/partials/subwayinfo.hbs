@@ -1,0 +1,6 @@
+<li class="w3-hover-light-gray"><i class="fa fa-subway w3-text-green" area-hidden=true></i> 
+    {{destination}} - {{timeExpected}} {{#if display}} <span class="w3-right">({{display}})</span> {{/if}}<br>
+    {{#if delayed}}
+    <div class="w3-sand">Försenad från {{time}} till {{timeExpected}}.</div>
+    {{/if}}
+</li>

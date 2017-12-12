@@ -1,8 +1,6 @@
 <li class="w3-hover-light-gray"><i class="fa fa-bus w3-text-orange" area-hidden=true></i> 
-    Buss {{number}} - {{timeExpected}} {{#if display}} ({{display}}) {{/if}}<br>
+    {{number}} {{destination}} - {{timeExpected}} {{#if display}} <span class="w3-right">({{display}})</span> {{/if}}<br>
     {{#if delayed}}
-    <div class="w3-sand">Mot {{destination}} {{time}} försenad till {{timeExpected}}.</div>
-    {{else}}
-    <div class="w3-small">{{destination}}</div>
+    <div class="w3-sand">Försenad från {{time}} till {{timeExpected}}.</div>
     {{/if}}
 </li>

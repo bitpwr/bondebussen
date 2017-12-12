@@ -1,28 +1,74 @@
-{{#if stops.length}}
-<p class="w3-container">Bussar avgående från {{name}} klockan {{checktime}}.</p>
+{{#if busStops.length}}
+<h4 class="w3-panel w3-leftbar w3-border-orange w3-light-gray">Bussar från {{busStation}} klockan {{checktime}}.</h4>
 {{/if}}
 <div class="w3-row">
-    {{#stops}}
+    {{#busStops}}
         <div id="col" class="w3-container">
-            <h4>Mot {{destinationText}}</h4>
+            <h5 class="w3-border-bottom w3-border-orange">Mot {{destinationText}}</h5>
             <ul class="w3-ul w3-hoverable">
-            {{#buses}}
+            {{#departures}}
                 {{> busli}}
-            {{/buses}}
+            {{/departures}}
             </ul>
         </div>
-    {{/stops}}
-    {{^stops}}
-    <i>Det går inga bussar den närmsta timmen eller så finns inte hållplatsen.</i>
-    {{/stops}}
+    {{/busStops}}
 </div>
 
+{{#if trainStops.length}}
+<h4 class="w3-panel w3-leftbar w3-border-blue w3-light-gray">Pendeltåg från {{trainStation}} klockan {{checktime}}.</h4>
+{{/if}}
+<div class="w3-row">
+    {{#trainStops}}
+        <div id="traincol" class="w3-container w3-half">
+            <h5 class="w3-border-bottom w3-border-blue">Mot {{destinationText}}</h5>
+            <ul class="w3-ul w3-hoverable">
+            {{#departures}}
+                {{> traininfo}}
+            {{/departures}}
+            </ul>
+        </div>
+    {{/trainStops}}
+</div>
+
+{{#if metroStops.length}}
+<h4 class="w3-panel w3-leftbar w3-border-green w3-light-gray">Tunnelbana från {{metroStation}} klockan {{checktime}}.</h4>
+{{/if}}
+<div class="w3-row">
+    {{#metroStops}}
+        <div id="col" class="w3-container">
+            <h5 class="w3-border-bottom w3-border-light-green">Mot {{destinationText}}</h5>
+            <ul class="w3-ul w3-hoverable">
+            {{#departures}}
+                {{> subwayinfo}}
+            {{/departures}}
+            </ul>
+        </div>
+    {{/metroStops}}
+</div>
+
+{{#if tramStops.length}}
+<h4 class="w3-panel w3-leftbar w3-border-blue-gray w3-light-gray">Spårvagnar från {{tramStation}} klockan {{checktime}}.</h4>
+{{/if}}
+<div class="w3-row">
+    {{#tramStops}}
+        <div id="col" class="w3-container">
+            <h5 class="w3-border-bottom w3-border-blue-gray">Mot {{destinationText}}</h5>
+            <ul class="w3-ul w3-hoverable">
+            {{#departures}}
+                {{> traminfo}}
+            {{/departures}}
+            </ul>
+        </div>
+    {{/tramStops}}
+</div>
+
+
 <script type="text/javascript">
-    if ({{stops.length}} == 2) {
-        w3.addClass('#col','w3-half')
-    }
-    else if ({{stops.length}} >= 3) {
+    if ({{busStops.length}} == 3) {
         w3.addClass('#col','w3-third')
+    }
+    else {
+        w3.addClass('#col','w3-half')
     }
     
 </script>
