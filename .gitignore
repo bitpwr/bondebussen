@@ -1,2 +1,12 @@
+# node
 node_modules
+
+# vue
+.env.local
+.env.*.local
+webclient/dist
+
+# editors
+.idea
+.vscode
 

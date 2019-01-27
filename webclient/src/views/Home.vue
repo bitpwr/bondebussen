@@ -1,62 +1,76 @@
 <template>
   <div class="home">
-    <button class="btn btn-primary" v-on:click="get">Update</button>
-    <input v-model="stop"/>
+    <Search :selectedCallback="get" />
 
-    <ul class="nav nav-pills">
+    <ul class="nav nav-pills mb-3">
       <li class="nav-item">
-        <button v-if="gotBusses() && typeCount() > 1" class="nav-link btn" v-bind:class="{ active: type == 0 }"
+        <button v-if="gotBusses() && typeCount() > 1" class="nav-link btn"
+                v-bind:class="{ active: type == 0 }"
                 v-on:click="type = 0">Buss</button>
       </li>
       <li class="nav-item">
-        <button v-if="gotTrains() && typeCount() > 1" class="nav-link btn" v-bind:class="{ active: type == 1 }"
+        <button v-if="gotTrains() && typeCount() > 1" class="nav-link btn"
+                v-bind:class="{ active: type == 1 }"
                 v-on:click="type = 1">Pendeltåg</button>
       </li>
       <li class="nav-item">
-        <button v-if="gotMetros() && typeCount() > 1" class="nav-link btn" v-bind:class="{ active: type == 2 }"
+        <button v-if="gotMetros() && typeCount() > 1" class="nav-link btn"
+                v-bind:class="{ active: type == 2 }"
                 v-on:click="type = 2">Tunnelbana</button>
       </li>
       <li class="nav-item">
-        <button v-if="gotTrams() && typeCount() > 1" class="nav-link btn" v-bind:class="{ active: type == 3 }"
+        <button v-if="gotTrams() && typeCount() > 1" class="nav-link btn"
+                v-bind:class="{ active: type == 3 }"
                 v-on:click="type = 3">Tvärbana</button>
       </li>
     </ul>
 
     <div v-if="type == 0 && info.busStops && info.busStops.length > 0">
-      <h3>Bussar från {{ info.busStation }}<div class="float-right">{{ info.checktime }}</div></h3>
+      <h4>{{ info.busStation }}</h4>
+      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
       <div v-for="stop in info.busStops">
         <Departures v-bind:destinationText="stop.destinationText"
                     v-bind:departures=stop.departures
                     showNumber
-                    faIcon="fa-bus text-danger"
-                    v-bind:display="stop.display" />
+                    faIcon="fa-bus"
+                    textColor="text-danger"
+                    borderColor="border-danger" />
       </div>
     </div>
 
     <div v-if="type == 1 && info.trainStops && info.trainStops.length > 0">
-      <h3>Pendeltåg från {{ info.trainStation }}<div class="float-right">{{ info.checktime }}</div></h3>
+      <h4>{{ info.trainStation }}</h4>
+      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
       <div class="" v-for="stop in info.trainStops">
         <Departures v-bind:destinationText="stop.destinationText"
                     v-bind:departures=stop.departures
-                    faIcon="fa-train text-primary" />
+                    faIcon="fa-train"
+                    textColor="text-primary"
+                    borderColor="border-primary" />
       </div>
     </div>
 
     <div v-if="type == 2 && info.metroStops && info.metroStops.length > 0">
-      <h3>Tunnelbana från {{ info.metroStation }}<div class="float-right">{{ info.checktime }}</div></h3>
+      <h4>{{ info.metroStation }}</h4>
+      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
       <div class="" v-for="stop in info.metroStops">
         <Departures v-bind:destinationText="stop.destinationText"
                     v-bind:departures=stop.departures
-                    faIcon="fa-subway text-success" />
+                    faIcon="fa-subway"
+                    textColor="text-success"
+                    borderColor="border-success" />
       </div>
     </div>
 
     <div v-if="type == 3 && info.tramStops && info.tramStops.length > 0">
-      <h3>Tvärbana från {{ info.tramStation }}<div class="float-right">{{ info.checktime }}</div></h3>
+      <h4>{{ info.tramStation }}</h4>
+      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
       <div class="" v-for="stop in info.tramStops">
         <Departures v-bind:destinationText="stop.destinationText"
                     v-bind:departures=stop.departures
-                    faIcon="fa-car text-secondary" />
+                    faIcon="fa-car"
+                    textColor="text-secondary"
+                    borderColor="border-secondary" />
       </div>
     </div>
 
@@ -66,6 +80,7 @@
 <script>
 // @ is an alias to /src
 import Departures from '@/components/Departures.vue'
+import Search from '@/components/Search.vue'
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -89,19 +104,25 @@ function toJson(response) {
 export default {
   name: 'home',
   components: {
-    Departures
+    Departures,
+    Search
   },
   data() {
       return {
-          stop: 5812,
           info: {},
           type: 0
       }
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      this.get(5812);
+    })
+  },
   methods: {
-    get() {
+    get(stationId) {
       var self = this;
-      fetch('http://192.168.10.137:3100/departures/' + self.stop, {mode: 'cors'}).
+      var url = process.env.VUE_APP_API_URL + '/departure/' + stationId;
+      fetch(url, {mode: 'cors'}).
       then(checkStatus).then(toJson).
       then(res => { self.info = res; }).
       catch(err => console.log("Error: " + err))
