@@ -3,6 +3,7 @@
 const axios = require('axios')
 
 const realtimeUrl = 'http://api.sl.se/api2/realtimedeparturesV4.json';
+const stationSearchUrl = 'http://api.sl.se/api2/typeahead.json';
 
 function realtimeOptions(siteid, minutes) {
     let params = {
@@ -18,6 +19,18 @@ function realtimeOptions(siteid, minutes) {
 
     return params;
 }
+
+function searchOptions(station, count) {
+    let params = {
+        key: process.env.BB_SEARCH_KEY,
+        searchstring: station,
+        stationsonly: true,
+        maxresults: count
+    };
+
+    return params;
+}
+
 
 function timeformat(date) {
     function z(n) { return (n < 10 ? '0' : '') + n; }
@@ -41,7 +54,7 @@ function parseDeparture(stops, slData) {
     }
 
     if (time1 != time2) {
-        departure.delayed = true
+        departure.delayed = Math.round((date2 - date1) / (1000 * 60));
     }
 
     var stop = slData.StopPointNumber;
@@ -146,7 +159,7 @@ function convertSlRealtime(data) {
 
 async function departures(siteid) {
     try {
-        let res = await axios.get(realtimeUrl, { params: realtimeOptions(siteid, 45)});
+        let res = await axios.get(realtimeUrl, { params: realtimeOptions(siteid, 35)});
         console.log(res.data)
         let out = convertSlRealtime(res.data);
 
@@ -158,6 +171,35 @@ async function departures(siteid) {
     }
 }
 
+async function search(station) {
+    try {
+        let res = await axios.get(stationSearchUrl, { params: searchOptions(station, 10)});
+        var data = res.data;
+        console.log(data)
+
+        var stops = [];
+        if (data.StatusCode != 0)
+        {
+            console.log("Statuscode: " + data.StatusCode + ", " + data.Message);
+            // res.render('error', { message: data.Message });
+        }
+        else {
+            for (var i = 0; i < data.ResponseData.length; ++i) {
+                stops.push({name: data.ResponseData[i].Name,
+                            id: data.ResponseData[i].SiteId})
+            }
+        }
+
+        return stops;
+    }
+    catch (error) {
+        console.error(error);
+        // return error;
+    }
+}
+
+
 module.exports = {
-    departures: departures
+    departures: departures,
+    search: search
 };

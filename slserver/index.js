@@ -24,7 +24,7 @@ app.get('/time', (req, res) => {
     res.status(200).json({ time: time });
 });
 
-app.get('/departures/:id', async (req, res) => {
+app.get('/departure/:id', async (req, res) => {
     console.log("get deps: " + req.params.id);
     var stop = req.params.id
     data = await sl.departures(stop);
@@ -32,6 +32,19 @@ app.get('/departures/:id', async (req, res) => {
     res.status(200).json(data);
 });
 
+app.get('/search', async (req, res) => {
+    console.log("SEARCH: " + req.query.stop);
+
+    if (typeof req.query.stop === 'undefined' || req.query.stop == "") {
+        console.log("NO STOP GIVEN")
+        res.status(404).json({});
+    }
+    else {
+        data = await sl.search(req.query.stop);
+        console.log(data);
+        res.status(200).json(data);
+    }
+});
 
 const port = process.env.BB_SERVER_PORT || 3333;
 server = app.listen(port, function() {
