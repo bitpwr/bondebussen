@@ -4,7 +4,8 @@
       <div class="input-group-prepend">
         <span class="input-group-text" id="basic-addon1">Hållplats</span>
       </div>
-      <input type="text" v-model="searchText" @input="textChanged" class="form-control" aria-describedby="basic-addon1"/>
+      <input type="text" v-bind:value="searchText" @input="updateSearchText($event.target.value)"
+            class="form-control" aria-describedby="basic-addon1"/>
     </div>
       <div class="list-group list-group-flush shadow">
           <div v-for="station in result"
@@ -58,6 +59,10 @@ export default {
       then(checkStatus).then(toJson).
       then(res => { self.result = res; }).
       catch(err => console.log("Error: " + err))
+    },
+    updateSearchText(text) {
+      this.searchText = text;
+      this.textChanged()
     },
     textChanged: _.debounce(function (e) {
       this.search()

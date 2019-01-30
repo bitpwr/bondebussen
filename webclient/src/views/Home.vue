@@ -2,80 +2,67 @@
   <div class="home">
     <Search :selectedCallback="get" />
 
-    <ul class="nav nav-pills mb-3">
-      <li class="nav-item">
-        <button v-if="gotBusses() && typeCount() > 1" class="nav-link btn"
-                v-bind:class="{ active: type == 0 }"
-                v-on:click="type = 0">Buss</button>
-      </li>
-      <li class="nav-item">
-        <button v-if="gotTrains() && typeCount() > 1" class="nav-link btn"
-                v-bind:class="{ active: type == 1 }"
-                v-on:click="type = 1">Pendeltåg</button>
-      </li>
-      <li class="nav-item">
-        <button v-if="gotMetros() && typeCount() > 1" class="nav-link btn"
-                v-bind:class="{ active: type == 2 }"
-                v-on:click="type = 2">Tunnelbana</button>
-      </li>
-      <li class="nav-item">
-        <button v-if="gotTrams() && typeCount() > 1" class="nav-link btn"
-                v-bind:class="{ active: type == 3 }"
-                v-on:click="type = 3">Tvärbana</button>
-      </li>
-    </ul>
-
-    <div v-if="type == 0 && info.busStops && info.busStops.length > 0">
-      <h4>{{ info.busStation }}</h4>
-      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
-      <div v-for="stop in info.busStops">
-        <Departures v-bind:destinationText="stop.destinationText"
-                    v-bind:departures=stop.departures
-                    showNumber
-                    faIcon="fa-bus"
-                    textColor="text-danger"
-                    borderColor="border-danger" />
-      </div>
+    <div class="mb-2">
+      <b-button-group v-if="typeCount() > 1">
+        <b-button v-if="gotType(0) && typeCount() > 1" v-bind:class="{ active: type == 0 }"
+          @click="type = 0">Buss</b-button>
+        <b-button v-if="gotType(1) && typeCount() > 1" v-bind:class="{ active: type == 1 }"
+          @click="type = 1">Pendeltåg</b-button>
+        <b-button v-if="gotType(2) && typeCount() > 1" v-bind:class="{ active: type == 2 }"
+          @click="type = 2">Tunnelbana</b-button>
+        <b-button v-if="gotType(3) && typeCount() > 1" v-bind:class="{ active: type == 3 }"
+          @click="type = 3">Tvärbana</b-button>
+      </b-button-group>
     </div>
 
-    <div v-if="type == 1 && info.trainStops && info.trainStops.length > 0">
-      <h4>{{ info.trainStation }}</h4>
-      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
-      <div class="" v-for="stop in info.trainStops">
-        <Departures v-bind:destinationText="stop.destinationText"
-                    v-bind:departures=stop.departures
-                    faIcon="fa-train"
-                    textColor="text-primary"
-                    borderColor="border-primary" />
-      </div>
+    <div class="d-flex justify-content-between">
+      <h4>{{ stationName }}</h4>
+      <b-button variant="primary" @click="get(stationId)">Update</b-button>
+    </div>
+    <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
+
+    <div v-if="type == 0 && gotType(type)" v-for="stop in info.busStops">
+      <Departures v-bind:destinationText="stop.destinationText"
+                  v-bind:departures=stop.departures
+                  showNumber
+                  faIcon="fa-bus"
+                  textColor="text-danger"
+                  borderColor="border-danger" />
     </div>
 
-    <div v-if="type == 2 && info.metroStops && info.metroStops.length > 0">
-      <h4>{{ info.metroStation }}</h4>
-      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
-      <div class="" v-for="stop in info.metroStops">
-        <Departures v-bind:destinationText="stop.destinationText"
-                    v-bind:departures=stop.departures
-                    faIcon="fa-subway"
-                    textColor="text-success"
-                    borderColor="border-success" />
-      </div>
+    <div v-if="type == 1 && gotType(type)" v-for="stop in info.trainStops">
+      <Departures v-bind:destinationText="stop.destinationText"
+                  v-bind:departures=stop.departures
+                  faIcon="fa-train"
+                  textColor="text-primary"
+                  borderColor="border-primary" />
     </div>
 
-    <div v-if="type == 3 && info.tramStops && info.tramStops.length > 0">
-      <h4>{{ info.tramStation }}</h4>
-      <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
-      <div class="" v-for="stop in info.tramStops">
-        <Departures v-bind:destinationText="stop.destinationText"
-                    v-bind:departures=stop.departures
-                    faIcon="fa-car"
-                    textColor="text-secondary"
-                    borderColor="border-secondary" />
-      </div>
+    <div v-if="type == 2 && gotType(type)" v-for="stop in info.metroStops">
+      <Departures v-bind:destinationText="stop.destinationText"
+                  v-bind:departures=stop.departures
+                  faIcon="fa-subway"
+                  textColor="text-success"
+                  borderColor="border-success" />
+    </div>
+
+    <div v-if="type == 3 && gotType(type)" v-for="stop in info.tramStops">
+      <Departures v-bind:destinationText="stop.destinationText"
+                  v-bind:departures=stop.departures
+                  faIcon="fa-car"
+                  textColor="text-secondary"
+                  borderColor="border-secondary" />
     </div>
 
   </div>
 </template>
+
+<style>
+.btn {
+    padding-right: 9px;
+    padding-left: 9px;
+}
+</style>
 
 <script>
 // @ is an alias to /src
@@ -110,6 +97,7 @@ export default {
   data() {
       return {
           info: {},
+          stationId: 0,
           type: 0
       }
   },
@@ -118,33 +106,73 @@ export default {
       this.get(5812);
     })
   },
+  computed: {
+    stationName: function () {
+      if (this.info == []) {
+        return ""
+      }
+      if (this.type == 0) {
+        return this.info.busStation
+      }
+      else if (this.type == 1) {
+        return this.info.trainStation
+      }
+      else if (this.type == 2) {
+        return this.info.metroStation
+      }
+      else if (this.type == 3) {
+        return this.info.tramStation
+      }
+    }
+  },
   methods: {
     get(stationId) {
       var self = this;
+      self.stationId = stationId;
       var url = process.env.VUE_APP_API_URL + '/departure/' + stationId;
       fetch(url, {mode: 'cors'}).
       then(checkStatus).then(toJson).
-      then(res => { self.info = res; }).
+      then(res => { self.info = res;
+          if (!self.gotType(self.type)) {
+            if (self.gotType(0)) {
+              self.type = 0;
+            }
+            else if (self.gotType(1)) {
+              self.type = 1;
+            }
+            else if (self.gotType(2)) {
+              self.type = 2;
+            }
+            else if (self.gotType(3)) {
+              self.type = 3;
+            }
+            else {
+              self.type = 0;
+            }
+          }
+        }).
       catch(err => console.log("Error: " + err))
     },
-    gotBusses: function () {
-      return (this.info.busStops && this.info.busStops.length > 0)
-    },
-    gotTrains: function () {
-      return this.info.trainStops && this.info.trainStops.length > 0
-    },
-    gotMetros: function () {
-      return this.info.metroStops && this.info.metroStops.length > 0
-    },
-    gotTrams: function () {
-      return this.info.tramStops && this.info.tramStops.length > 0
+    gotType(i) {
+      switch (i) {
+        case 0:
+          return this.info.busStops && this.info.busStops.length > 0;
+        case 1:
+          return this.info.trainStops && this.info.trainStops.length > 0;
+        case 2:
+          return this.info.metroStops && this.info.metroStops.length > 0;
+        case 3:
+          return this.info.tramStops && this.info.tramStops.length > 0;
+        default:
+          return false;
+      }
     },
     typeCount: function() {
       var count = 0;
-      if (this.gotBusses()) ++count;
-      if (this.gotTrains()) ++count;
-      if (this.gotMetros()) ++count;
-      if (this.gotTrams()) ++count;
+      if (this.gotType(0)) ++count;
+      if (this.gotType(1)) ++count;
+      if (this.gotType(2)) ++count;
+      if (this.gotType(3)) ++count;
       return count;
     }
   }
