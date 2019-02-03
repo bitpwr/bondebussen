@@ -5,21 +5,22 @@
     <div class="mb-2">
       <b-button-group v-if="typeCount() > 1">
         <b-button v-if="gotType(0) && typeCount() > 1" v-bind:class="{ active: type == 0 }"
-          @click="type = 0">Buss</b-button>
+          @click="type = 0" class="px-2">Buss</b-button>
         <b-button v-if="gotType(1) && typeCount() > 1" v-bind:class="{ active: type == 1 }"
-          @click="type = 1">Pendeltåg</b-button>
+          @click="type = 1" class="px-2">Pendeltåg</b-button>
         <b-button v-if="gotType(2) && typeCount() > 1" v-bind:class="{ active: type == 2 }"
-          @click="type = 2">Tunnelbana</b-button>
+          @click="type = 2" class="px-2">Tunnelbana</b-button>
         <b-button v-if="gotType(3) && typeCount() > 1" v-bind:class="{ active: type == 3 }"
-          @click="type = 3">Tvärbana</b-button>
+          @click="type = 3" class="px-2">Tvärbana</b-button>
       </b-button-group>
     </div>
 
     <div class="d-flex justify-content-between">
-      <h4>{{ stationName }}</h4>
-      <b-button variant="primary" @click="get(stationId)">Update</b-button>
+      <h4 v-if="typeCount() > 0">{{ stationName }}</h4>
+      <h4 v-else>Inga avgångar ifrån {{ searchName }} vid {{ info.checktime }}</h4>
+      <b-button @click="get(searchName, stationId)">Update</b-button>
     </div>
-    <p class="text-muted">Avgångar efter {{ info.checktime }}</p>
+    <p v-if="typeCount() > 0"class="text-muted">Avgångar efter {{ info.checktime }}</p>
 
     <div v-if="type == 0 && gotType(type)" v-for="stop in info.busStops">
       <Departures v-bind:destinationText="stop.destinationText"
@@ -58,10 +59,11 @@
 </template>
 
 <style>
-.btn {
-    padding-right: 9px;
-    padding-left: 9px;
+.btn:focus, .btn:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
+
 </style>
 
 <script>
@@ -97,13 +99,14 @@ export default {
   data() {
       return {
           info: {},
-          stationId: 0,
+          stationId: 5812,
+          searchName: 'Bondevägen',
           type: 0
       }
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.get(5812);
+      this.get(this.searchName, this.stationId);
     })
   },
   computed: {
@@ -126,9 +129,10 @@ export default {
     }
   },
   methods: {
-    get(stationId) {
+    get(name, stationId) {
       var self = this;
       self.stationId = stationId;
+      self.searchName = name;
       var url = process.env.VUE_APP_API_URL + '/departure/' + stationId;
       fetch(url, {mode: 'cors'}).
       then(checkStatus).then(toJson).

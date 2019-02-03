@@ -90,8 +90,7 @@ function parseDeparture(stops, slData) {
 };
 
 function convertSlRealtime(data) {
-    var out = { title: "Busstider i Stockholm",
-                gtag: "conf.gtag" };
+    var out = { title: "Busstider i Stockholm" };
 
     var date = new Date(data.ResponseData.LatestUpdate);
     out.checktime = date.toLocaleTimeString();
@@ -160,7 +159,7 @@ function convertSlRealtime(data) {
 async function departures(siteid) {
     try {
         let res = await axios.get(realtimeUrl, { params: realtimeOptions(siteid, 35)});
-        console.log(res.data)
+        // console.log(res.data)
         let out = convertSlRealtime(res.data);
 
         return out;
@@ -175,7 +174,7 @@ async function search(station) {
     try {
         let res = await axios.get(stationSearchUrl, { params: searchOptions(station, 10)});
         var data = res.data;
-        console.log(data)
+        // console.log(data)
 
         var stops = [];
         if (data.StatusCode != 0)

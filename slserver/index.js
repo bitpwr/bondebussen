@@ -25,10 +25,10 @@ app.get('/time', (req, res) => {
 });
 
 app.get('/departure/:id', async (req, res) => {
-    console.log("get deps: " + req.params.id);
+    console.log("get departure: " + req.params.id);
     var stop = req.params.id
     data = await sl.departures(stop);
-    console.log(data);
+    // console.log(data);
     res.status(200).json(data);
 });
 
@@ -41,7 +41,7 @@ app.get('/search', async (req, res) => {
     }
     else {
         data = await sl.search(req.query.stop);
-        console.log(data);
+        // console.log(data);
         res.status(200).json(data);
     }
 });

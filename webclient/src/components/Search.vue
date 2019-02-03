@@ -12,7 +12,7 @@
               class="list-group-item list-group-item-action btn"
               @mouseover="active = true"
               @mouseout="active = false"
-              @click="selected(station.id)"
+              @click="selected(station.name, station.id)"
           >
           <span>{{ station.name }}</span>
           </div>
@@ -67,12 +67,12 @@ export default {
     textChanged: _.debounce(function (e) {
       this.search()
     }, 500),
-    selected(station) {
+    selected(station, id) {
       this.result = [];
       this.searchText = '';
       // TODO: use callback or event?
       // this.$emit('selected', station)
-      this.selectedCallback(station)
+      this.selectedCallback(station, id)
     }
   }
 };
