@@ -1,6 +1,6 @@
 {
   "name": "bondebussen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Busses from Bondevägen in Järfälla",
   "main": "app.js",
   "scripts": {
@@ -13,12 +13,12 @@
   "author": "Bitpwr",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.15.4",
-    "express-handlebars": "^3.0.0",
-    "morgan": "^1.9.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "morgan": "^1.9.1",
     "path": "^0.12.7",
-    "request": "^2.82.0",
-    "requestretry": "^1.12.2",
-    "serve-favicon": "^2.4.5"
+    "request": "^2.88.0",
+    "requestretry": "^1.13.0",
+    "serve-favicon": "^2.5.0"
   }
 }
