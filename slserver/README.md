@@ -15,4 +15,4 @@ export BB_SERVER_PORT=3100
 
 ## Run
 
-Use docker container
+Use docker container and set environment variables in the `env` file.

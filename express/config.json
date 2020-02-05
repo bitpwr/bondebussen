@@ -1,7 +1,6 @@
 {
-    "key":  "yourslkey",
+    "key": "yourslkey",
     "keyPlats": "yourplatskey",
     "port": 4141,
     "gtag": "yourgoogleanalyticscode"
 }
-
