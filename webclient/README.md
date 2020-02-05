@@ -1,4 +1,11 @@
-# bondebussen
+# bondebussen frontend
+
+The web frontend to slserver based on vue. Before build, set up evironment
+
+.env
+```
+VUE_APP_API_URL=bondebussen.se:3100
+```
 
 ## Project setup
 ```
