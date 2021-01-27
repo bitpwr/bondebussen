@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -o errexit -o nounset -o xtrace
 
-docker run -d --rm --env-file ./env -p 3100:3100 slapi 
-
+podman run -d --rm --env-file ./env -p 3100:3100 bb_server
