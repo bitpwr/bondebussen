@@ -15,9 +15,9 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
-    "morgan": "^1.9.1",
+    "morgan": "^1.10.0",
     "path": "^0.12.7",
-    "request": "^2.88.0",
+    "request": "^2.88.2",
     "requestretry": "^1.13.0",
     "serve-favicon": "^2.5.0"
   }

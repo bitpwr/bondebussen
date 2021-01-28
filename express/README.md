@@ -11,5 +11,5 @@ Set keys for the SL api and port in `config.json`.
 Use e.g. `pm2`
 
 ```
-pm2 start app.js -name bondebussen
+pm2 start app.js --name bondebussen
 ```
