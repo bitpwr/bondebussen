@@ -1,3 +1,6 @@
 module.exports = {
-    publicPath: '/'
+  publicPath: '/',
+  chainWebpack: config => {
+    config.plugins.delete('optimize-css')
   }
+}
