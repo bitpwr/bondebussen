@@ -2,7 +2,7 @@
 set -o nounset -o xtrace
 
 readonly script_dir="$(realpath "${BASH_SOURCE[0]%/*}")"
-readonly name="bb_server"
+readonly name="bbapi"
 
 # Remove old container
 buildah rmi ${name}
@@ -44,3 +44,4 @@ buildah config --cmd 'node index.js' ${ctr}
 
 # Commit and tag the image
 buildah commit ${ctr} ${name}
+
