@@ -12,8 +12,7 @@ const theme = createTheme({
     mode: 'light'
   },
   typography: {
-    fontFamily: roboto.style.fontFamily,
-    fontSize: 16
+    fontFamily: roboto.style.fontFamily
   },
   components: {
     MuiAlert: {

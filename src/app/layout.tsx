@@ -3,7 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import DirectionsBus from '@mui/icons-material/DirectionsBus';
 import ThemeRegistry from '@/theme/ThemeRegistry';
 
 export const metadata = {
@@ -18,20 +18,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeRegistry>
           <AppBar position="fixed" sx={{ zIndex: 2000 }}>
             <Toolbar sx={{ backgroundColor: 'background.paper' }}>
-              <DashboardIcon sx={{ color: '#F44', mr: 2, transform: 'translateY(-2px)' }} />
-              <Typography variant="h6" color="text.primary">
+              <DirectionsBus sx={{ color: '#F44', mr: 2 }} />
+              <Typography
+                variant="h5"
+                color="text.secondary"
+                fontWeight="regular"
+                letterSpacing={4}
+              >
                 Bondebussen
               </Typography>
             </Toolbar>
           </AppBar>
           <Container
-            maxWidth="md"
-            // component="main"
+            maxWidth="sm"
             sx={{
               flexGrow: 1,
               bgcolor: 'background.default',
               mt: ['48px', '64px'],
-              p: 3
+              p: 1
             }}
           >
             {children}
