@@ -1,6 +1,7 @@
 'use server';
 
 import axios from 'axios';
+import { Departure, Departures, StopDepartures } from './sl-types';
 
 const realtimeUrl: string = 'http://api.sl.se/api2/realtimedeparturesV4.json';
 const departureWindow: number = 35;
@@ -19,33 +20,6 @@ function realtimeOptions(siteId: number, minutes: number) {
 
   return params;
 }
-
-export type Departures = {
-  checkTime: string;
-  busStops: StopInfo[];
-  trainStops: StopInfo[];
-  tramStops: StopInfo[];
-  metroStops: StopInfo[];
-  busStation?: string;
-  trainStation?: string;
-  tramStation?: string;
-  metroStation?: string;
-};
-
-export type StopInfo = {
-  stopId: number;
-  destinations: string[];
-  departures: Departure[];
-};
-
-export type Departure = {
-  lineNumber: number;
-  destination: string;
-  plannedTime: string;
-  expectedTime: string;
-  display?: string;
-  delayedMinutes?: number;
-};
 
 export type ErrorHandler = (message: string) => void;
 
@@ -120,7 +94,7 @@ function parseRealtimeDepartures(data: any): Departures {
 
 /// Adds the departure in slData to stops
 /// returns the name of the stop
-function parseDeparture(stops: StopInfo[], slData: any): string {
+function parseDeparture(stops: StopDepartures[], slData: any): string {
   const timeTableDate: Date = new Date(slData.TimeTabledDateTime);
   const expectedDate: Date = new Date(slData.ExpectedDateTime);
 
