@@ -5,6 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DirectionsBus from '@mui/icons-material/DirectionsBus';
 import ThemeRegistry from '@/theme/ThemeRegistry';
+import { TransportType, typeColor } from '@/lib/sl-types';
 
 export const metadata = {
   title: 'Bondebussen',
@@ -18,12 +19,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeRegistry>
           <AppBar position="fixed" sx={{ zIndex: 2000 }}>
             <Toolbar sx={{ backgroundColor: 'background.paper' }}>
-              <DirectionsBus sx={{ color: '#F44', mr: 2 }} />
+              <DirectionsBus sx={{ color: typeColor(TransportType.Bus), mr: 2 }} />
               <Typography
                 variant="h5"
                 color="text.secondary"
                 fontWeight="regular"
                 letterSpacing={4}
+                component="a"
+                href="/"
+                sx={{ textDecoration: 'none' }}
               >
                 Bondebussen
               </Typography>

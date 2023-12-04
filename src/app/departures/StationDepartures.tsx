@@ -5,55 +5,63 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
+  SvgIcon,
   Typography
 } from '@mui/material';
 import Box from '@mui/material/Box';
-import DirectionsBus from '@mui/icons-material/DirectionsBus';
-import { StopDepartures } from '@/lib/sl-types';
+import { TransportDepartures, typeColor, typeIcon } from '@/lib/sl-types';
 
-const departureText = (time: string): string => {
-  if (time == 'Nu') {
-    return 'Avgår nu';
-  }
-  return `Avgår om ${time}`;
-};
+// const departureText = (time: string): string => {
+//   if (time == 'Nu') {
+//     return 'Avgår nu';
+//   }
+//   return `Avgår om ${time}`;
+// };
 
-const secondaryItem = (display?: string, delay?: number) => {
-  if (!display && !delay) {
+const secondaryItem = (delay?: number) => {
+  if (!delay) {
     return null;
   }
 
   return (
-    <Stack direction="column">
-      {display ? (
-        <Typography variant="body2" color="text.secondary">
-          {departureText(display)}
-        </Typography>
-      ) : null}
+    <>
       {delay && delay > 0 ? (
-        <Typography variant="body2" color="text.secondary">{`Försenad ${delay} min`}</Typography>
+        <Stack direction="row">
+          <Typography
+            variant="body2"
+            color="text.main"
+            sx={{ bgcolor: 'warning.light' }}
+          >{`Försenad ${delay} min`}</Typography>
+        </Stack>
       ) : null}
-    </Stack>
+    </>
   );
 };
 
 type StationDeparturesProps = {
-  stops: StopDepartures[];
-  station: string;
+  departures: TransportDepartures | undefined;
   time: string;
 };
 
-export default function StationDepartures({ stops, station, time }: StationDeparturesProps) {
+export default function StationDepartures({ departures, time }: StationDeparturesProps) {
+  if (!departures) {
+    return (
+      <Box>
+        <Typography variant="h4">Hittade inga avgångar</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between', my: 2 }}>
-        <Typography variant="h4">{station}</Typography>
+        <Typography variant="h4">{departures.stationName}</Typography>
         <Typography variant="h4">{time.substring(0, 5)}</Typography>
       </Stack>
-      {stops.map((stop) => (
-        <Box key={stop.stopId}>
+      {departures.departures.map((stop) => (
+        <Box key={stop.stopId} sx={{ mt: 2 }}>
           <Typography variant="h5">Till {stop.destinations.join(', ')}</Typography>
-          <Divider sx={{ bgcolor: '#F44' }} />
+          <Divider sx={{ bgcolor: typeColor(departures.type) }} />
           <List dense={true}>
             {stop.departures.map((dep) => (
               <ListItem
@@ -69,17 +77,20 @@ export default function StationDepartures({ stops, station, time }: StationDepar
               >
                 <ListItemIcon>
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ minWidth: 90 }}>
-                    <DirectionsBus sx={{ color: '#F44' }} />
+                    <SvgIcon
+                      component={typeIcon(departures.type)}
+                      sx={{ color: typeColor(departures.type) }}
+                    />
                     <Typography variant="h5" color="text.primary">
                       {dep.lineNumber}
                     </Typography>
                   </Stack>
                 </ListItemIcon>
                 <ListItemText
-                  sx={{ ml: 1 }}
+                  sx={{ ml: 1, mr: 2 }}
                   disableTypography={true}
                   primary={dep.destination}
-                  secondary={secondaryItem(dep.display, dep.delayedMinutes)}
+                  secondary={secondaryItem(dep.delayedMinutes)}
                 />
               </ListItem>
             ))}

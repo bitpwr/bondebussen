@@ -1,7 +1,13 @@
 'use server';
 
 import axios from 'axios';
-import { Departure, Departures, StopDepartures } from './sl-types';
+import {
+  Departure,
+  Departures,
+  StopDepartures,
+  TransportDepartures,
+  TransportType
+} from './sl-types';
 
 const realtimeUrl: string = 'http://api.sl.se/api2/realtimedeparturesV4.json';
 const departureWindow: number = 35;
@@ -55,39 +61,27 @@ function parseRealtimeDepartures(data: any): Departures {
 
   let departures: Departures = {
     checkTime: date.toLocaleTimeString('se-SV'),
-    busStops: [],
-    trainStops: [],
-    tramStops: [],
-    metroStops: []
+    transports: []
   };
 
-  data.ResponseData.Buses.forEach((item: any) => {
-    const station = parseDeparture(departures.busStops, item);
-    if (!departures.busStation) {
-      departures.busStation = station;
+  const addType = (type: TransportType, data: any) => {
+    if (data.length > 0) {
+      let transport: TransportDepartures = {
+        stationName: '',
+        type: type,
+        departures: []
+      };
+      data.forEach((item: any) => {
+        transport.stationName = parseDeparture(transport.departures, item);
+      });
+      departures.transports.push(transport);
     }
-  });
+  };
 
-  data.ResponseData.Trains.forEach((item: any) => {
-    const station = parseDeparture(departures.trainStops, item);
-    if (!departures.trainStation) {
-      departures.trainStation = station;
-    }
-  });
-
-  data.ResponseData.Trams.forEach((item: any) => {
-    const station = parseDeparture(departures.tramStops, item);
-    if (!departures.tramStation) {
-      departures.tramStation = station;
-    }
-  });
-
-  data.ResponseData.Metros.forEach((item: any) => {
-    const station = parseDeparture(departures.metroStops, item);
-    if (!departures.metroStation) {
-      departures.metroStation = station;
-    }
-  });
+  addType(TransportType.Bus, data.ResponseData.Buses);
+  addType(TransportType.Metro, data.ResponseData.Metros);
+  addType(TransportType.Train, data.ResponseData.Trains);
+  addType(TransportType.Tram, data.ResponseData.Trams);
 
   return departures;
 }

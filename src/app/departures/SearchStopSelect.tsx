@@ -1,8 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { Autocomplete, TextField } from '@mui/material';
 import { Station } from '@/lib/sl-stops';
 import { debounce } from '@mui/material/utils';
 import axios from 'axios';
@@ -80,7 +79,7 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
         filterSelectedOptions
         fullWidth
         value={value}
-        noOptionsText="Inga hållplatser"
+        noOptionsText=" "
         onChange={async (event: any, newValue: Station | null) => {
           console.log(`onChange: ${newValue}`);
           setValue(newValue);

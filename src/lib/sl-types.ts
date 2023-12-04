@@ -1,3 +1,5 @@
+import { DirectionsBus, DirectionsRailway, DirectionsSubway, Tram } from '@mui/icons-material';
+
 export const enum TransportType {
   Bus = 1,
   Metro = 2,
@@ -7,21 +9,14 @@ export const enum TransportType {
 
 export type Departures = {
   checkTime: string;
-  busStops: StopDepartures[];
-  trainStops: StopDepartures[];
-  tramStops: StopDepartures[];
-  metroStops: StopDepartures[];
-  busStation?: string;
-  trainStation?: string;
-  tramStation?: string;
-  metroStation?: string;
+  transports: TransportDepartures[];
 };
 
-// export type StationDepartures = {
-//   stationName: string;
-//   type: TransportType;
-//   departures: StopDepartures[];
-// };
+export type TransportDepartures = {
+  stationName: string;
+  type: TransportType;
+  departures: StopDepartures[];
+};
 
 export type StopDepartures = {
   stopId: number;
@@ -37,3 +32,63 @@ export type Departure = {
   display?: string;
   delayedMinutes?: number;
 };
+
+export function typeName(type: TransportType): string {
+  if (type == TransportType.Bus) {
+    return 'Bus';
+  }
+
+  if (type == TransportType.Metro) {
+    return 'Tunnelbana';
+  }
+
+  if (type == TransportType.Train) {
+    return 'Pendeltåg';
+  }
+
+  if (type == TransportType.Tram) {
+    return 'Tvärbana';
+  }
+
+  return '';
+}
+
+export function typeColor(type: TransportType): string {
+  if (type == TransportType.Bus) {
+    return '#f44336';
+  }
+
+  if (type == TransportType.Metro) {
+    return '#4caf50';
+  }
+
+  if (type == TransportType.Train) {
+    return '#2979ff';
+  }
+
+  if (type == TransportType.Tram) {
+    return '#606060';
+  }
+
+  return '#000000';
+}
+
+export function typeIcon(type: TransportType) {
+  if (type == TransportType.Bus) {
+    return DirectionsBus;
+  }
+
+  if (type == TransportType.Metro) {
+    return DirectionsSubway;
+  }
+
+  if (type == TransportType.Train) {
+    return DirectionsRailway;
+  }
+
+  if (type == TransportType.Tram) {
+    return Tram;
+  }
+
+  return DirectionsBus;
+}
