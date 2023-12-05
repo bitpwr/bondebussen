@@ -38,13 +38,11 @@ export default function DeparturePage() {
       {departures ? (
         <>
           <ButtonGroup
-            variant="outlined"
-            aria-label="outlined primary button group"
             sx={{ display: departures.transports.length < 2 ? 'none' : 'inline-block', mt: 2 }}
           >
             {departures.transports.map((t) => (
               <Button
-                disabled={t.type == type}
+                variant={t.type == type ? 'contained' : 'outlined'}
                 key={t.type}
                 onClick={() => setType(t.type)}
                 size="small"
