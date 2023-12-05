@@ -35,7 +35,7 @@ export type Departure = {
 
 export function typeName(type: TransportType): string {
   if (type == TransportType.Bus) {
-    return 'Bus';
+    return 'Buss';
   }
 
   if (type == TransportType.Metro) {
