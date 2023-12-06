@@ -13,6 +13,7 @@ import {
 import Box from '@mui/material/Box';
 import {
   Departure,
+  DeviationType,
   StopDepartures,
   TransportDepartures,
   typeColor,
@@ -20,23 +21,32 @@ import {
 } from '@/lib/sl-types';
 import { useEffect, useState } from 'react';
 
-const secondaryItem = (delay?: number) => {
-  if (!delay) {
+const secondaryItem = (departure: Departure) => {
+  if (!departure.delayedMinutes && !departure.deviation) {
     return null;
   }
 
   return (
-    <>
-      {delay && delay > 0 ? (
-        <Stack direction="row">
-          <Typography
-            variant="body2"
-            color="text.main"
-            sx={{ bgcolor: 'warning.light' }}
-          >{`Försenad ${delay} min`}</Typography>
-        </Stack>
+    <Stack direction="column" alignItems="flex-start">
+      {departure.delayedMinutes && departure.delayedMinutes > 0 ? (
+        <Typography
+          variant="body2"
+          color="text.main"
+          sx={{ bgcolor: 'warning.light' }}
+        >{`Försenad ${departure.delayedMinutes} min`}</Typography>
       ) : null}
-    </>
+      {departure.deviation ? (
+        <Typography
+          variant="body2"
+          color="text.main"
+          sx={{
+            bgcolor: departure.deviation.type == DeviationType.Information ? null : 'warning.light'
+          }}
+        >
+          {departure.deviation.text}
+        </Typography>
+      ) : null}
+    </Stack>
   );
 };
 
@@ -139,7 +149,7 @@ export default function StationDepartures({ departures, time }: StationDeparture
                     sx={{ ml: 1, mr: 2 }}
                     disableTypography={true}
                     primary={dep.destination}
-                    secondary={secondaryItem(dep.delayedMinutes)}
+                    secondary={secondaryItem(dep)}
                   />
                 </ListItem>
               ))}

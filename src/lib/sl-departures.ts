@@ -4,13 +4,14 @@ import axios from 'axios';
 import {
   Departure,
   Departures,
+  DeviationType,
   StopDepartures,
   TransportDepartures,
   TransportType
 } from './sl-types';
 
 const realtimeUrl: string = 'http://api.sl.se/api2/realtimedeparturesV4.json';
-const departureWindow: number = 35;
+const departureWindow: number = 45;
 
 function realtimeOptions(siteId: number, minutes: number) {
   const params = {
@@ -107,6 +108,33 @@ function parseDeparture(stops: StopDepartures[], slData: any): string {
     departure.delayedMinutes = Math.round(
       (expectedDate.getTime() - timeTableDate.getTime()) / (1000 * 60)
     );
+  }
+
+  const deviations = slData.Deviations;
+  if (deviations != null) {
+    // just pick first for now
+    const deviation = deviations[0];
+
+    if (deviations.length > 1) {
+      console.log(`There are ${deviations.length} deviations`);
+      console.log(deviations[1]);
+    }
+    let type = DeviationType.Warning;
+    if (deviation.Consequence == 'INFORMATION') {
+      type = DeviationType.Information;
+    } else if (deviation.Consequence == 'CANCELLED') {
+      type = DeviationType.Severe;
+    }
+    // English text after ' * '
+    let text: string = deviation.Text;
+    const starPos = text.indexOf('*');
+    if (starPos > 0) {
+      text = text.substring(0, starPos - 1);
+    }
+    departure.deviation = {
+      text: text,
+      type: type
+    };
   }
 
   const stopId: number = slData.StopPointNumber;
