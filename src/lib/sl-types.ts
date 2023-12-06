@@ -24,13 +24,25 @@ export type StopDepartures = {
   departures: Departure[];
 };
 
+export const enum DeviationType {
+  Information = 1,
+  Warning = 2,
+  Severe = 3
+}
+
+export type Deviation = {
+  text: string;
+  type: DeviationType;
+};
+
 export type Departure = {
-  lineNumber: number;
+  lineNumber: string;
   destination: string;
   plannedTime: string;
   expectedTime: string;
   display?: string;
   delayedMinutes?: number;
+  deviation?: Deviation;
 };
 
 export function typeName(type: TransportType): string {

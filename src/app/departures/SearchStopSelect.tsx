@@ -15,7 +15,7 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState<readonly Station[]>([]);
 
-  let hostname = '127.0.0.1:3000';
+  let hostname = '127.0.0.1';
   if (typeof window !== 'undefined') {
     hostname = window.location.hostname;
   }
@@ -23,8 +23,6 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
   const fetch = React.useMemo(
     () =>
       debounce(async (name: string, callback: (results: readonly Station[]) => void) => {
-        console.log(`debounce: ${name}`);
-        console.log(`http://${hostname}:3000/api/search?name=${name}`);
         const params = {
           name: name
         };
@@ -43,7 +41,6 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
   );
 
   React.useEffect(() => {
-    console.log(`run effect, value: ${value}`);
     let active = true;
 
     options.findIndex;
@@ -59,8 +56,6 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
           setOptions(results);
         }
       });
-    } else {
-      console.log(`SKIP fetch`);
     }
 
     return () => {
@@ -81,14 +76,12 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
         value={value}
         noOptionsText=" "
         onChange={async (event: any, newValue: Station | null) => {
-          console.log(`onChange: ${newValue}`);
           setValue(newValue);
           if (stationSelected) {
             await stationSelected(newValue);
           }
         }}
         onInputChange={(event, newInputValue) => {
-          console.log(`onInputChange: ${newInputValue}`);
           setInputValue(newInputValue);
         }}
         isOptionEqualToValue={(option: Station, value: Station) => option.id == value.id}
