@@ -13,6 +13,25 @@ export default function DeparturePage() {
   const [departures, setDepartures] = useState<Departures | null>(null);
   const [type, setType] = useState<TransportType>(TransportType.Bus);
 
+  function selectStation(station: Station | null) {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      if (station) {
+        localStorage.setItem('currentStation', `${station.id}`);
+      }
+    }
+    setStation(station);
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const currentStationId = localStorage.getItem('currentStation');
+      if (currentStationId) {
+        console.log(`got stored id ${currentStationId}`);
+        setStation({ id: parseInt(currentStationId), name: '' });
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const getDeps = async (id: number) => {
       const deps = await getDepartures(id);
@@ -32,7 +51,7 @@ export default function DeparturePage() {
     <Box sx={{ mt: 2 }}>
       <SearchStopSelect
         stationSelected={async (station: Station | null) => {
-          setStation(station);
+          selectStation(station);
         }}
       />
       {departures ? (
