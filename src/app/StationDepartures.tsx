@@ -146,7 +146,7 @@ export default function StationDepartures({ departures, time }: StationDeparture
                     </Stack>
                   </ListItemIcon>
                   <ListItemText
-                    sx={{ ml: 1, mr: 2 }}
+                    sx={{ ml: 1, mr: 2.5 }}
                     disableTypography={true}
                     primary={dep.destination}
                     secondary={secondaryItem(dep)}
