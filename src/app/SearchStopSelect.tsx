@@ -64,36 +64,34 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
   }, [value, inputValue, fetch]);
 
   return (
-    <>
-      <Autocomplete
-        filterOptions={(x) => x}
-        options={options}
-        getOptionLabel={(option) => (typeof option === 'string' ? option : option.name)}
-        autoComplete
-        includeInputInList
-        filterSelectedOptions
-        fullWidth
-        value={value}
-        noOptionsText=" "
-        onChange={async (event: any, newValue: Station | null) => {
-          setValue(newValue);
-          if (stationSelected) {
-            await stationSelected(newValue);
-          }
-        }}
-        onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        isOptionEqualToValue={(option: Station, value: Station) => option.id == value.id}
-        renderInput={(params) => <TextField {...params} label="Hållplats" fullWidth />}
-        renderOption={(props: React.HTMLAttributes<HTMLLIElement>, option: Station) => {
-          return (
-            <li {...props} key={option.id}>
-              {option.name}
-            </li>
-          );
-        }}
-      />
-    </>
+    <Autocomplete
+      filterOptions={(x) => x}
+      options={options}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.name)}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      fullWidth
+      value={value}
+      noOptionsText=" "
+      onChange={async (event: any, newValue: Station | null) => {
+        setValue(newValue);
+        if (stationSelected) {
+          await stationSelected(newValue);
+        }
+      }}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      isOptionEqualToValue={(option: Station, value: Station) => option.id == value.id}
+      renderInput={(params) => <TextField {...params} label="Hållplats" fullWidth />}
+      renderOption={(props: React.HTMLAttributes<HTMLLIElement>, option: Station) => {
+        return (
+          <li {...props} key={option.id}>
+            {option.name}
+          </li>
+        );
+      }}
+    />
   );
 }
