@@ -1,0 +1,10 @@
+.dockerignore
+.env
+.next
+.git
+.gitignore
+node_modules
+Dockerfile
+npm-debug.log
+README.md
+src/app/test/*
