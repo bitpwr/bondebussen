@@ -10,15 +10,17 @@ type SearchStopSelectParams = {
   stationSelected?: (station: Station | null) => void;
 };
 
-export default function SearchStopSelect({ stationSelected }: SearchStopSelectParams) {
+export default function SearchStopSelect({ stationSelected }: Readonly<SearchStopSelectParams>) {
   const [value, setValue] = React.useState<Station | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState<readonly Station[]>([]);
+  const [url, setUrl] = React.useState<string>('http://127.0.0.1');
 
-  let hostname = '127.0.0.1';
-  if (typeof window !== 'undefined') {
-    hostname = window.location.hostname;
-  }
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUrl(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`);
+    }
+  }, []);
 
   const fetch = React.useMemo(
     () =>
@@ -27,7 +29,7 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
           name: name
         };
         try {
-          const res = await axios.get(`http://${hostname}:3000/api/search`, { params: params });
+          const res = await axios.get(`${url}/api/search`, { params: params });
           const unique = res.data.filter(
             (item: any, index: number) => res.data.findIndex((i: any) => i.id == item.id) === index
           );
@@ -36,14 +38,12 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
           console.log(error.message);
           callback(JSON.parse('[]'));
         }
-      }, 500),
-    []
+      }, 400),
+    [url]
   );
 
   React.useEffect(() => {
     let active = true;
-
-    options.findIndex;
 
     if (inputValue.length < 3) {
       setOptions([]);
@@ -77,7 +77,7 @@ export default function SearchStopSelect({ stationSelected }: SearchStopSelectPa
       onChange={async (event: any, newValue: Station | null) => {
         setValue(newValue);
         if (stationSelected) {
-          await stationSelected(newValue);
+          stationSelected(newValue);
         }
       }}
       onInputChange={(event, newInputValue) => {
