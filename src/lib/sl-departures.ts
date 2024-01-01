@@ -9,6 +9,7 @@ import {
   TransportDepartures,
   TransportType
 } from './sl-types';
+import { logDeparture } from './influx';
 
 const realtimeUrl: string = 'http://api.sl.se/api2/realtimedeparturesV4.json';
 const departureWindow: number = 45;
@@ -41,7 +42,10 @@ export async function getDepartures(
       return null;
     }
 
-    return parseRealtimeDepartures(res.data);
+    const deps = parseRealtimeDepartures(res.data);
+    const station = deps.transports.length > 0 ? deps.transports[0].stationName : '';
+    logDeparture(station, siteId);
+    return deps;
   } catch (error: any) {
     console.log(error.message);
     errorHandler?.('Kunde inte hämta avgångar');

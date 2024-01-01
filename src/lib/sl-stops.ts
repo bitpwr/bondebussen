@@ -1,6 +1,7 @@
 'use server';
 
 import axios from 'axios';
+import { logSearch } from './influx';
 
 const stationSearchUrl = 'https://journeyplanner.integration.sl.se/v1/typeahead.json';
 
@@ -24,6 +25,8 @@ export async function searchStation(name: string): Promise<Station[] | null> {
   try {
     const res = await axios.get(stationSearchUrl, { params: searchOptions(name, 10) });
     const data = res.data;
+
+    logSearch(name);
 
     let stops: Station[] = [];
     if (data.StatusCode != 0) {
