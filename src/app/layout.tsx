@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import DirectionsBus from '@mui/icons-material/DirectionsBus';
 import ThemeRegistry from '@/theme/ThemeRegistry';
 import { TransportType, typeColor } from '@/lib/sl-types';
+import Footer from './Footer';
 
 export const metadata = {
   title: 'Bondebussen',
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             {children}
           </Container>
+          <Footer />
         </ThemeRegistry>
       </body>
     </html>
