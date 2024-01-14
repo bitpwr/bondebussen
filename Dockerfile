@@ -16,7 +16,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY src ./src/
-COPY public ./public/
+#COPY public ./public/
 COPY next.config.js ./
 COPY package.json package-lock.json ./
 COPY tsconfig.json ./
@@ -34,7 +34,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY --from=builder /app/public ./public
+#COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
