@@ -5,7 +5,8 @@ The initial goal was to show bus departures from Bondevägen in Järfälla only,
 
 ## Prerequisites
 
-Keys to access the SL api must be added to the `.env` file.
+Keys to access the SL api must be added to a `.env` file.
+Use the `env` file as a template.
 
 ## Development
 
