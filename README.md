@@ -3,6 +3,8 @@
 Web site showing current departures for public transports in Stockholm, based on next.js, react and MUI.
 The initial goal was to show bus departures from Bondevägen in Järfälla only, hence the name `bondebussen`.
 
+Try it out at [bondebussen.se](https://bondebussen.se).
+
 ## Prerequisites
 
 Keys to access the SL api must be added to a `.env` file.
