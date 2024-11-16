@@ -4,30 +4,22 @@ import axios from 'axios';
 import {
   Departure,
   Departures,
+  Deviation,
   DeviationType,
   StopDepartures,
   TransportDepartures,
-  TransportType
+  TransportType,
+  typeFromName
 } from './sl-types';
 import { logDeparture } from './influx';
 
-const realtimeUrl: string = 'http://api.sl.se/api2/realtimedeparturesV4.json';
-const departureWindow: number = 45;
-
-function realtimeOptions(siteId: number, minutes: number) {
-  const params = {
-    key: process.env.BB_REALTIME_KEY,
-    siteid: siteId,
-    timewindow: minutes,
-    bus: true,
-    metro: true,
-    train: true,
-    tram: true,
-    ship: false
-  };
-
-  return params;
+function departureUrl(siteId: number): string {
+  return `https://transport.integration.sl.se/v1/sites/${siteId}/departures`;
 }
+
+const departureOptions = {
+  forecast: 45
+};
 
 export type ErrorHandler = (message: string) => void;
 
@@ -36,8 +28,10 @@ export async function getDepartures(
   errorHandler?: ErrorHandler
 ): Promise<Departures | null> {
   try {
-    const res = await axios.get(realtimeUrl, { params: realtimeOptions(siteId, departureWindow) });
-    if (res.data.StatusCode !== 0) {
+    const res = await axios.get(departureUrl(siteId), {
+      params: departureOptions
+    });
+    if (res.status !== 200) {
       errorHandler?.(res.data.Message);
       return null;
     }
@@ -60,98 +54,101 @@ function timeFormat(date: Date) {
   return z(date.getHours()) + ':' + z(date.getMinutes());
 }
 
-// parse SL realtime departures into Departures
-function parseRealtimeDepartures(data: any): Departures {
-  const date = new Date(data.ResponseData.LatestUpdate);
-
-  let departures: Departures = {
-    checkTime: date.toLocaleTimeString('se-SV'),
-    transports: []
-  };
-
-  const addType = (type: TransportType, data: any) => {
-    if (data.length > 0) {
-      let transport: TransportDepartures = {
-        stationName: '',
-        type: type,
-        departures: []
-      };
-      data.forEach((item: any) => {
-        transport.stationName = parseDeparture(transport.departures, item);
-      });
-      departures.transports.push(transport);
-    }
-  };
-
-  addType(TransportType.Bus, data.ResponseData.Buses);
-  addType(TransportType.Metro, data.ResponseData.Metros);
-  addType(TransportType.Train, data.ResponseData.Trains);
-  addType(TransportType.Tram, data.ResponseData.Trams);
-
-  return departures;
-}
-
-/// Adds the departure in slData to stops
-/// returns the name of the stop
-function parseDeparture(stops: StopDepartures[], slData: any): string {
-  const timeTableDate: Date = new Date(slData.TimeTabledDateTime);
-  const expectedDate: Date = new Date(slData.ExpectedDateTime);
-
-  const departure: Departure = {
-    lineNumber: slData.LineNumber,
-    destination: slData.Destination,
-    plannedTime: timeFormat(timeTableDate),
-    expectedTime: timeFormat(expectedDate)
-  };
-
-  if (slData.DisplayTime != departure.expectedTime) {
-    departure.display = slData.DisplayTime;
-  }
-
-  if (departure.plannedTime != departure.expectedTime) {
-    departure.delayedMinutes = Math.round(
-      (expectedDate.getTime() - timeTableDate.getTime()) / (1000 * 60)
-    );
-  }
-
-  const deviations = slData.Deviations;
-  if (deviations != null) {
+// generate deviation info if any
+function deviation(deviations: any): Deviation | undefined {
+  if (deviations.length > 0) {
     // just pick first for now
-    const deviation = deviations[0];
+    const dev = deviations[0];
 
     if (deviations.length > 1) {
       console.log(`There are ${deviations.length} deviations`);
       console.log(deviations[1]);
     }
     let type = DeviationType.Warning;
-    if (deviation.Consequence == 'INFORMATION') {
+    if (dev.consequence == 'INFORMATION') {
       type = DeviationType.Information;
-    } else if (deviation.Consequence == 'CANCELLED') {
+    } else if (dev.consequence == 'CANCELLED') {
       type = DeviationType.Severe;
     }
-    // English text after ' * '
-    let text: string = deviation.Text;
-    const starPos = text.indexOf('*');
-    if (starPos > 0) {
-      text = text.substring(0, starPos - 1);
-    }
-    departure.deviation = {
-      text: text,
+
+    const d: Deviation = {
+      text: dev.message,
       type: type
     };
+    return d;
   }
 
-  const stopId: number = slData.StopPointNumber;
+  return undefined;
+}
 
-  const existingStop = stops.find((s) => s.stopId === stopId);
-  if (existingStop) {
-    existingStop.departures.push(departure);
-    if (!existingStop.destinations.some((d) => d == departure.destination)) {
-      existingStop.destinations.push(departure.destination);
+// parse SL realtime departures into Departures
+function parseRealtimeDepartures(data: any) {
+  const date = new Date();
+
+  let departures: Departures = {
+    checkTime: date.toLocaleTimeString('se-SV'),
+    transports: []
+  };
+
+  const transportDepartures = (type: TransportType, station: string) => {
+    const existingTransport = departures.transports.find((t) => t.type === type);
+    if (existingTransport) {
+      return existingTransport;
+    } else {
+      let transport: TransportDepartures = {
+        stationName: station,
+        type: type,
+        departures: []
+      };
+      departures.transports.push(transport);
+      return transport;
     }
-  } else {
-    stops.push({ stopId: stopId, destinations: [departure.destination], departures: [departure] });
-  }
+  };
 
-  return slData.StopAreaName;
+  const stopDepartures = (transport: TransportDepartures, stopId: number) => {
+    const existingStop = transport.departures.find((s) => s.stopId === stopId);
+    if (existingStop) {
+      return existingStop;
+    } else {
+      let stop: StopDepartures = {
+        stopId: stopId,
+        destinations: [],
+        departures: []
+      };
+      transport.departures.push(stop);
+      return stop;
+    }
+  };
+
+  data.departures?.forEach((item: any) => {
+    const timeTableDate: Date = new Date(item.scheduled);
+    const expectedDate: Date = new Date(item.expected);
+    const type: TransportType = typeFromName(item.line.transport_mode);
+    const stopPoint: number = item.stop_point.id;
+
+    let dep: Departure = {
+      lineNumber: item.line.designation,
+      destination: item.destination,
+      plannedTime: timeFormat(timeTableDate),
+      expectedTime: timeFormat(expectedDate),
+      display: item.display,
+      delayedMinutes: 0,
+      deviation: deviation(item.deviations)
+    };
+
+    if (dep.plannedTime != dep.expectedTime) {
+      dep.delayedMinutes = Math.round(
+        (expectedDate.getTime() - timeTableDate.getTime()) / (1000 * 60)
+      );
+    }
+
+    const transport = transportDepartures(type, item.stop_area.name);
+    const stop = stopDepartures(transport, stopPoint);
+    stop.departures.push(dep);
+    if (!stop.destinations.some((d) => d == dep.destination)) {
+      stop.destinations.push(dep.destination);
+    }
+  });
+
+  return departures;
 }

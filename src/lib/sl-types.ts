@@ -45,6 +45,26 @@ export type Departure = {
   deviation?: Deviation;
 };
 
+export function typeFromName(name: string): TransportType {
+  if (name == 'BUS') {
+    return TransportType.Bus;
+  }
+
+  if (name == 'METRO') {
+    return TransportType.Metro;
+  }
+
+  if (name == 'TRAIN') {
+    return TransportType.Train;
+  }
+
+  if (name == 'TRAM') {
+    return TransportType.Tram;
+  }
+
+  return TransportType.Bus;
+}
+
 export function typeName(type: TransportType): string {
   if (type == TransportType.Bus) {
     return 'Buss';
