@@ -10,11 +10,19 @@ Try it out at [bondebussen.se](https://bondebussen.se).
 Keys to access the SL api must be added to a `.env` file.
 Use the `env` file as a template.
 
+## Setup
+
+Install dependencies
+
+```sh
+npm install
+```
+
 ## Development
 
 Run the development server
 
-```bash
+```sh
 npm run dev
 ```
 
