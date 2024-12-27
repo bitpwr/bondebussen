@@ -20,9 +20,9 @@ export default function Footer() {
           Bondebussen.
         </Typography>
         <Typography variant="body1" color="text.secondary" align="center">
-          {'Copyright © '}
+          {'Presenteras av '}
           <Link color="inherit" href="https://hsolutions.se">
-            {'hsolutions'}
+            {'Holtmo Solutions'}
           </Link>{' '}
           {new Date().getFullYear()}
           {'.'}

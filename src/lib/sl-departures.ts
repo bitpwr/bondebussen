@@ -86,7 +86,7 @@ function parseRealtimeDepartures(data: any) {
   const date = new Date();
 
   let departures: Departures = {
-    checkTime: date.toLocaleTimeString('se-SV'),
+    checkTime: date.toLocaleTimeString('se-SV', { timeZone: 'Europe/Stockholm' }),
     transports: []
   };
 
