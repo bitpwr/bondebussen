@@ -58,13 +58,10 @@ function timeFormat(date: Date) {
 // generate deviation info if any
 function deviation(deviations: any): Deviation | undefined {
   if (deviations.length > 0) {
-    // just pick first for now
-    const dev = deviations[0];
+    const dev = deviations.reduce((prev: any, current: any) => {
+      return (prev.importance_level > current.importance_level) ? prev : current;
+    });
 
-    if (deviations.length > 1) {
-      console.log(`There are ${deviations.length} deviations`);
-      console.log(deviations[1]);
-    }
     let type = DeviationType.Warning;
     if (dev.consequence == 'INFORMATION') {
       type = DeviationType.Information;
