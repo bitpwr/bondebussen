@@ -26,7 +26,7 @@ export default function Home() {
     if (typeof window !== 'undefined' && window.localStorage) {
       const currentStationId = localStorage.getItem('currentStation');
       if (currentStationId) {
-        setStation({ id: parseInt(currentStationId), name: '', newid: 0 });
+        setStation({ id: parseInt(currentStationId), name: '' });
       }
     }
   }, []);

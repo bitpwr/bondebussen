@@ -19,7 +19,6 @@ function searchOptions(name: string, maxResults: number) {
 export type Station = {
   id: number;
   name: string;
-  newid: number;
 };
 
 export async function searchStation(name: string): Promise<Station[] | null> {
@@ -36,7 +35,7 @@ export async function searchStation(name: string): Promise<Station[] | null> {
     }
 
     data.ResponseData.forEach((s: any) => {
-      stops.push({ id: s.SiteId.slice(s.SiteId.length - 4), name: s.Name, newid: s.SiteId });
+      stops.push({ id: s.SiteId.slice(s.SiteId.length - 4), name: s.Name });
     });
 
     return stops;
