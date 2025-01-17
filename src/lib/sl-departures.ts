@@ -6,6 +6,7 @@ import {
   Departures,
   Deviation,
   DeviationType,
+  sortTransportsByType,
   StopDepartures,
   TransportDepartures,
   TransportType,
@@ -150,5 +151,6 @@ function parseRealtimeDepartures(data: any) {
     }
   });
 
+  sortTransportsByType(departures);
   return departures;
 }

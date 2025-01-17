@@ -45,6 +45,10 @@ export type Departure = {
   deviation?: Deviation;
 };
 
+export function sortTransportsByType(departures: Departures): Departures {
+  departures.transports.sort((a, b) => a.type - b.type);
+  return departures;
+}
 export function typeFromName(name: string): TransportType {
   if (name == 'BUS') {
     return TransportType.Bus;
