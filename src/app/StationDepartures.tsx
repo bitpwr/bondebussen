@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonGroup,
+  Checkbox,
   Divider,
   List,
   ListItem,
@@ -20,6 +21,7 @@ import {
   typeIcon
 } from '@/lib/sl-types';
 import { useEffect, useState } from 'react';
+import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
 const secondaryItem = (departure: Departure) => {
   if (!departure.delayedMinutes && !departure.deviation) {
@@ -66,11 +68,19 @@ const uniqueLines = (departures: TransportDepartures | undefined): string[] => {
 type StationDeparturesProps = {
   departures: TransportDepartures | undefined;
   time: string;
+  favorite: boolean;
+  favoriteChanged: (name: string | undefined, favorite: boolean) => void;
 };
 
-export default function StationDepartures({ departures, time }: StationDeparturesProps) {
+export default function StationDepartures({
+  departures,
+  time,
+  favorite,
+  favoriteChanged
+}: StationDeparturesProps) {
   const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [lines, setLines] = useState<string[]>(uniqueLines(departures));
+  const [isFavorite, setIsFavorite] = useState<boolean>(favorite);
 
   useEffect(() => {
     setSelectedLine(null);
@@ -93,8 +103,14 @@ export default function StationDepartures({ departures, time }: StationDeparture
     <Box>
       <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between', mt: 1.5 }}>
         <Typography variant="h4">{departures.stationName}</Typography>
-        <Typography variant="h4">{time.substring(0, 5)}</Typography>
+        <Checkbox
+          checked={favorite}
+          icon={<FavoriteBorder />}
+          checkedIcon={<Favorite />}
+          onChange={(event) => favoriteChanged(departures?.stationName, event.target.checked)}
+        />
       </Stack>
+      <Box sx={{ fontSize: 20 }}>Avgångar efter {time.substring(0, 5)}</Box>
       <ButtonGroup sx={{ display: lines.length < 2 ? 'none' : 'inline-block', mt: 1 }}>
         {lines.map((line) => (
           <Button

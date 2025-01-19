@@ -35,7 +35,7 @@ export async function searchStation(name: string): Promise<Station[] | null> {
     }
 
     data.ResponseData.forEach((s: any) => {
-      stops.push({ id: s.SiteId.slice(s.SiteId.length - 4), name: s.Name });
+      stops.push({ id: parseInt(s.SiteId.slice(s.SiteId.length - 4)), name: s.Name });
     });
 
     return stops;

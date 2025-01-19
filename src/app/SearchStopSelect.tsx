@@ -1,16 +1,22 @@
 'use client';
 
 import * as React from 'react';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, Box, Stack, TextField } from '@mui/material';
 import { Station } from '@/lib/sl-stops';
 import { debounce } from '@mui/material/utils';
 import axios from 'axios';
+import { isStationInList } from '@/lib/ui-tools';
+import { Favorite } from '@mui/icons-material';
 
 type SearchStopSelectParams = {
+  favorites: Station[];
   stationSelected?: (station: Station | null) => void;
 };
 
-export default function SearchStopSelect({ stationSelected }: Readonly<SearchStopSelectParams>) {
+export default function SearchStopSelect({
+  favorites,
+  stationSelected
+}: Readonly<SearchStopSelectParams>) {
   const [value, setValue] = React.useState<Station | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState<readonly Station[]>([]);
@@ -30,23 +36,26 @@ export default function SearchStopSelect({ stationSelected }: Readonly<SearchSto
         };
         try {
           const res = await axios.get(`${url}/api/search`, { params: params });
-          const unique = res.data.filter(
-            (item: any, index: number) => res.data.findIndex((i: any) => i.id == item.id) === index
+          // Keep favorites on top and remove duplicates
+          let stations: Station[] = [...favorites, ...res.data];
+          stations = stations.filter(
+            (item: any, index: number) => stations.findIndex((i: any) => i.id == item.id) === index
           );
-          callback(unique);
+
+          callback(stations);
         } catch (error: any) {
           console.log(error.message);
           callback(JSON.parse('[]'));
         }
       }, 400),
-    [url]
+    [favorites, url]
   );
 
   React.useEffect(() => {
     let active = true;
 
     if (inputValue.length < 3) {
-      setOptions([]);
+      setOptions(favorites);
       return undefined;
     }
 
@@ -86,9 +95,17 @@ export default function SearchStopSelect({ stationSelected }: Readonly<SearchSto
       isOptionEqualToValue={(option: Station, value: Station) => option.id == value.id}
       renderInput={(params) => <TextField {...params} label="Hållplats" fullWidth />}
       renderOption={(props: React.HTMLAttributes<HTMLLIElement>, option: Station) => {
+        const isFavorite = isStationInList(option, favorites);
         return (
           <li {...props} key={option.id}>
-            {option.name}
+            <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between' }}>
+              <Box sx={{ fontWeight: isFavorite ? 'medium' : 'normaal' }}>{option.name}</Box>
+              {isFavorite ? (
+                <>
+                  <Favorite color="primary" />
+                </>
+              ) : null}
+            </Stack>
           </li>
         );
       }}
