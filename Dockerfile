@@ -1,5 +1,5 @@
 #FROM node:18-bookworm-slim AS base
-FROM node:18.18-alpine3.17 AS base
+FROM node:20.18-alpine3.21 AS base
 
 ############################################
 FROM base AS deps
@@ -8,6 +8,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+RUN npm install -g npm@latest
 RUN npm ci
 
 ############################################
