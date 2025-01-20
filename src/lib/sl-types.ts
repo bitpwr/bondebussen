@@ -49,6 +49,14 @@ export function sortTransportsByType(departures: Departures): Departures {
   departures.transports.sort((a, b) => a.type - b.type);
   return departures;
 }
+
+export function sortStopsByNumber(departures: Departures): Departures {
+  departures.transports.forEach((t) => {
+    t.departures.sort((a, b) => a.stopId - b.stopId);
+  });
+  return departures;
+}
+
 export function typeFromName(name: string): TransportType {
   if (name == 'BUS') {
     return TransportType.Bus;
