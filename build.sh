@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker build -t bondebussen -f Dockerfile .
+docker build -t bitpwr/bondebussen -f Dockerfile .
