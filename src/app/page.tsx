@@ -37,10 +37,18 @@ export default function Home() {
 
     setFavorite(isFavorite);
     const wasFavorite = isStationInList(favoriteStation, favorites);
+    let newFavorites: Station[] | null = null;
     if (isFavorite && !wasFavorite) {
-      setFavorites([...favorites, favoriteStation]);
+      newFavorites = [...favorites, favoriteStation];
     } else if (!isFavorite && wasFavorite) {
-      setFavorites(favorites.filter((s) => s.id !== favoriteStation.id));
+      newFavorites = favorites.filter((s) => s.id !== favoriteStation.id);
+    }
+
+    if (newFavorites != null) {
+      setFavorites(newFavorites);
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      }
     }
   }
 
@@ -49,6 +57,10 @@ export default function Home() {
       const currentStationId = localStorage.getItem('currentStation');
       if (currentStationId) {
         setStation({ id: parseInt(currentStationId), name: '' });
+      }
+      const favs = localStorage.getItem('favorites');
+      if (favs) {
+        setFavorites(JSON.parse(favs));
       }
     }
   }, []);
