@@ -52,6 +52,26 @@ export default function Home() {
     }
   }
 
+  function updateDepartures() {
+    const getDeps = async (id: number) => {
+      const deps = await getDepartures(id);
+      setDepartures(deps);
+
+      if (deps && !deps.transports.some((t) => t.type == type) && deps.transports.length > 0) {
+        setType(deps.transports[0].type);
+      }
+      if (station) {
+        setFavorite(isStationInList(station, favorites));
+      }
+    };
+
+    if (station) {
+      getDeps(station.id);
+    } else {
+      console.error('No station selected when updating departures');
+    }
+  }
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const currentStationId = localStorage.getItem('currentStation');
@@ -66,21 +86,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const getDeps = async (id: number) => {
-      const deps = await getDepartures(id);
-      setDepartures(deps);
-
-      if (deps && !deps.transports.some((t) => t.type == type) && deps.transports.length > 0) {
-        setType(deps.transports[0].type);
-      }
-    };
-
-    if (station) {
-      getDeps(station.id);
-      setFavorite(isStationInList(station, favorites));
-    } else {
-      console.error('No station selected when station changed');
-    }
+    updateDepartures();
   }, [station]);
 
   return (
@@ -114,6 +120,7 @@ export default function Home() {
             favoriteChanged={async (name: string | undefined, checked: boolean) => {
               updateFavoriteStation(name, checked);
             }}
+            refreshRequested={updateDepartures}
           />
         </>
       ) : null}

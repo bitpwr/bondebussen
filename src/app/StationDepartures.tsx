@@ -3,6 +3,7 @@ import {
   ButtonGroup,
   Checkbox,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -21,7 +22,7 @@ import {
   typeIcon
 } from '@/lib/sl-types';
 import { useEffect, useState } from 'react';
-import { Favorite, FavoriteBorder } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Refresh } from '@mui/icons-material';
 
 const secondaryItem = (departure: Departure) => {
   if (!departure.delayedMinutes && !departure.deviation) {
@@ -70,13 +71,15 @@ type StationDeparturesProps = {
   time: string;
   favorite: boolean;
   favoriteChanged: (name: string | undefined, favorite: boolean) => void;
+  refreshRequested: () => void;
 };
 
 export default function StationDepartures({
   departures,
   time,
   favorite,
-  favoriteChanged
+  favoriteChanged,
+  refreshRequested
 }: StationDeparturesProps) {
   const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [lines, setLines] = useState<string[]>(uniqueLines(departures));
@@ -110,7 +113,12 @@ export default function StationDepartures({
           onChange={(event) => favoriteChanged(departures?.stationName, event.target.checked)}
         />
       </Stack>
-      <Box sx={{ fontSize: 20 }}>Avgångar efter {time.substring(0, 5)}</Box>
+      <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between' }}>
+        <Box sx={{ fontSize: 20 }}>Avgångar efter {time.substring(0, 5)}</Box>
+        <IconButton sx={{ color: '#555555' }} onClick={refreshRequested}>
+          <Refresh />
+        </IconButton>
+      </Stack>
       <ButtonGroup sx={{ display: lines.length < 2 ? 'none' : 'inline-block', mt: 1 }}>
         {lines.map((line) => (
           <Button
