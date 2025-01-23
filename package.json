@@ -11,25 +11,25 @@
     "release-dry": "release-it --dry-run"
   },
   "dependencies": {
-    "@emotion/cache": "^11.11.0",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@influxdata/influxdb-client": "^1.33.2",
-    "@mui/icons-material": "^5.14.18",
-    "@mui/material": "^5.14.18",
-    "axios": "^1.6.2",
-    "next": "^14.2.18",
-    "react": "^18",
-    "react-dom": "^18"
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@influxdata/influxdb-client": "^1.35.0",
+    "@mui/icons-material": "^5.16.14",
+    "@mui/material": "^5.16.14",
+    "axios": "^1.7.9",
+    "next": "^14.2.23",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
+    "@types/node": "^20.17.16",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.0.3",
-    "prettier": "^3.1.0",
+    "prettier": "^3.4.2",
     "release-it": "^18.1.1",
-    "typescript": "^5"
+    "typescript": "^5.7.3"
   }
 }
