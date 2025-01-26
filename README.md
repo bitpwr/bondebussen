@@ -7,7 +7,7 @@ Try it out at [bondebussen.se](https://bondebussen.se).
 
 ## Prerequisites
 
-Keys to access the SL api must be added to a `.env` file.
+To add metrics to influxdb, provide secrets in a `.env` file.
 Use the `env` file as a template.
 
 ## Setup
