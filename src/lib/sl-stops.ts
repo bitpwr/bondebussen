@@ -23,24 +23,30 @@ export type Station = {
 
 export async function searchStation(name: string): Promise<Station[] | null> {
   try {
-    const res = await axios.get(stationSearchUrl, { params: searchOptions(name, 10) });
+    console.log(`Search for '${name}'`);
+
+    const res = await axios.get(stationSearchUrl, { params: searchOptions(name, 15) });
     const data = res.data;
 
     logSearch(name);
 
     let stops: Station[] = [];
     if (data.StatusCode != 0) {
-      console.log('Statuscode: ' + data.StatusCode + ', ' + data.Message);
+      console.error(`Search failed: code ${data.StatusCode}, ${data.Message}`);
       return null;
     }
 
+    // do not add duplicate stops
     data.ResponseData.forEach((s: any) => {
-      stops.push({ id: parseInt(s.SiteId.slice(s.SiteId.length - 4)), name: s.Name });
+      const stopId = parseInt(s.SiteId.slice(s.SiteId.length - 4));
+      if (!stops.some((stop) => stop.id === stopId)) {
+        stops.push({ id: stopId, name: s.Name });
+      }
     });
 
     return stops;
   } catch (error) {
-    console.error(error);
+    console.error(`Search exception: ${error}`);
     return null;
   }
 }

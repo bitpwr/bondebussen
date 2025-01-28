@@ -36,7 +36,7 @@ export default function SearchStopSelect({
         };
         try {
           const res = await axios.get(`${url}/api/search`, { params: params });
-          // Keep favorites on top and remove duplicates
+          // Keep favorites on top and remove duplicates (favorites)
           let stations: Station[] = [...favorites, ...res.data];
           stations = stations.filter(
             (item: any, index: number) => stations.findIndex((i: any) => i.id == item.id) === index
@@ -44,7 +44,7 @@ export default function SearchStopSelect({
 
           callback(stations);
         } catch (error: any) {
-          console.log(error.message);
+          console.error(`Search error: ${error.message}`);
           callback(JSON.parse('[]'));
         }
       }, 400),
