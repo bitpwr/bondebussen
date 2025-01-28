@@ -1,10 +1,17 @@
-import { DirectionsBus, DirectionsRailway, DirectionsSubway, Tram } from '@mui/icons-material';
+import {
+  DirectionsBoat,
+  DirectionsBus,
+  DirectionsRailway,
+  DirectionsSubway,
+  Tram
+} from '@mui/icons-material';
 
 export const enum TransportType {
   Bus = 1,
   Metro = 2,
   Train = 3,
-  Tram = 4
+  Tram = 4,
+  Ship = 5
 }
 
 export type Departures = {
@@ -58,81 +65,73 @@ export function sortStopsByNumber(departures: Departures): Departures {
 }
 
 export function typeFromName(name: string): TransportType {
-  if (name == 'BUS') {
-    return TransportType.Bus;
+  switch (name) {
+    case 'BUS':
+      return TransportType.Bus;
+    case 'METRO':
+      return TransportType.Metro;
+    case 'TRAIN':
+      return TransportType.Train;
+    case 'TRAM':
+      return TransportType.Tram;
+    case 'SHIP':
+      return TransportType.Ship;
   }
 
-  if (name == 'METRO') {
-    return TransportType.Metro;
-  }
-
-  if (name == 'TRAIN') {
-    return TransportType.Train;
-  }
-
-  if (name == 'TRAM') {
-    return TransportType.Tram;
-  }
-
+  console.error(`Unknown type name ${name}`);
   return TransportType.Bus;
 }
 
 export function typeName(type: TransportType): string {
-  if (type == TransportType.Bus) {
-    return 'Buss';
+  switch (type) {
+    case TransportType.Bus:
+      return 'Buss';
+    case TransportType.Metro:
+      return 'Tunnelbana';
+    case TransportType.Train:
+      return 'Pendeltåg';
+    case TransportType.Tram:
+      return 'Tvärbana';
+    case TransportType.Ship:
+      return 'Båt';
   }
 
-  if (type == TransportType.Metro) {
-    return 'Tunnelbana';
-  }
-
-  if (type == TransportType.Train) {
-    return 'Pendeltåg';
-  }
-
-  if (type == TransportType.Tram) {
-    return 'Tvärbana';
-  }
-
-  return '';
+  console.error(`Unknown type ${type}`);
+  return 'okänd';
 }
 
 export function typeColor(type: TransportType): string {
-  if (type == TransportType.Bus) {
-    return '#f44336';
+  switch (type) {
+    case TransportType.Bus:
+      return '#f44336';
+    case TransportType.Metro:
+      return '#4caf50';
+    case TransportType.Train:
+      return '#2979ff';
+    case TransportType.Tram:
+      return '#606060';
+    case TransportType.Ship:
+      return '#1560bb';
   }
 
-  if (type == TransportType.Metro) {
-    return '#4caf50';
-  }
-
-  if (type == TransportType.Train) {
-    return '#2979ff';
-  }
-
-  if (type == TransportType.Tram) {
-    return '#606060';
-  }
-
+  console.error(`Unknown type for coloer ${type}`);
   return '#000000';
 }
 
 export function typeIcon(type: TransportType) {
-  if (type == TransportType.Bus) {
-    return DirectionsBus;
+  switch (type) {
+    case TransportType.Bus:
+      return DirectionsBus;
+    case TransportType.Metro:
+      return DirectionsSubway;
+    case TransportType.Train:
+      return DirectionsRailway;
+    case TransportType.Tram:
+      return Tram;
+    case TransportType.Ship:
+      return DirectionsBoat;
   }
 
-  if (type == TransportType.Metro) {
-    return DirectionsSubway;
-  }
-
-  if (type == TransportType.Train) {
-    return DirectionsRailway;
-  }
-
-  if (type == TransportType.Tram) {
-    return Tram;
-  }
-
+  console.error(`Unknown type for icon ${type}`);
   return DirectionsBus;
 }
