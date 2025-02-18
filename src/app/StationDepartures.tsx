@@ -83,7 +83,6 @@ export default function StationDepartures({
 }: StationDeparturesProps) {
   const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [lines, setLines] = useState<string[]>(uniqueLines(departures));
-  const [isFavorite, setIsFavorite] = useState<boolean>(favorite);
 
   useEffect(() => {
     setSelectedLine(null);
