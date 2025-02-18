@@ -87,6 +87,17 @@ export default function Home() {
 
   useEffect(() => {
     updateDepartures();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        updateDepartures();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [station]);
 
   return (
