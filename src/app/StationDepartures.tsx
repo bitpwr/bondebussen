@@ -85,8 +85,11 @@ export default function StationDepartures({
   const [lines, setLines] = useState<string[]>(uniqueLines(departures));
 
   useEffect(() => {
+    const newLines = uniqueLines(departures);
+    if (!newLines.some((l) => l == selectedLine)) {
     setSelectedLine(null);
-    setLines(uniqueLines(departures));
+    }
+    setLines(newLines);
   }, [departures]);
 
   const selectedDepartures = (stop: StopDepartures): Departure[] => {
