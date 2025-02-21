@@ -24,6 +24,9 @@ import {
 import { useEffect, useState } from 'react';
 import { Favorite, FavoriteBorder, Refresh } from '@mui/icons-material';
 
+const updateInterval = 60000;
+const timerInterval = 10000;
+
 const secondaryItem = (departure: Departure) => {
   if (!departure.delayedMinutes && !departure.deviation) {
     return null;
@@ -31,7 +34,7 @@ const secondaryItem = (departure: Departure) => {
 
   return (
     <Stack direction="column" alignItems="flex-start">
-      {departure.delayedMinutes && departure.delayedMinutes > 0 ? (
+      {departure.delayedMinutes > 0 ? (
         <Typography
           variant="body2"
           color="text.main"
@@ -83,6 +86,9 @@ export default function StationDepartures({
 }: StationDeparturesProps) {
   const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [lines, setLines] = useState<string[]>(uniqueLines(departures));
+  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const newLines = uniqueLines(departures);
@@ -90,7 +96,43 @@ export default function StationDepartures({
     setSelectedLine(null);
     }
     setLines(newLines);
+    setLastUpdate(Date.now());
   }, [departures]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (visible) {
+      timer = setInterval(() => {
+        const time = Date.now();
+        setCurrentTime(time);
+        if (time - lastUpdate > updateInterval) {
+          refreshRequested();
+        }
+      }, timerInterval);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [visible, lastUpdate]);
 
   const selectedDepartures = (stop: StopDepartures): Departure[] => {
     return stop.departures.filter((d) => (selectedLine ?? d.lineNumber) == d.lineNumber);
@@ -117,9 +159,6 @@ export default function StationDepartures({
       </Stack>
       <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between' }}>
         <Box sx={{ fontSize: 20 }}>Avgångar efter {time.substring(0, 5)}</Box>
-        <IconButton sx={{ color: '#555555' }} onClick={refreshRequested}>
-          <Refresh />
-        </IconButton>
       </Stack>
       <ButtonGroup sx={{ display: lines.length < 2 ? 'none' : 'inline-block', mt: 1 }}>
         {lines.map((line) => (

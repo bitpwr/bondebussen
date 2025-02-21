@@ -48,7 +48,7 @@ export type Departure = {
   plannedTime: string;
   expectedTime: string;
   display?: string;
-  delayedMinutes?: number;
+  delayedMinutes: number;
   deviation?: Deviation;
 };
 
