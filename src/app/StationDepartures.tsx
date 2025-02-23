@@ -3,13 +3,15 @@ import {
   ButtonGroup,
   Checkbox,
   Divider,
-  IconButton,
+  FormControlLabel,
+  FormGroup,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Stack,
   SvgIcon,
+  Switch,
   Typography
 } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -24,8 +26,10 @@ import {
 import { useEffect, useState } from 'react';
 import { Favorite, FavoriteBorder, Refresh } from '@mui/icons-material';
 
-const updateInterval = 60000;
-const timerInterval = 10000;
+const absoluteTimerInterval = 10000;
+const relativeTimerInterval = 1000;
+const absoluteUpdateInterval = 60000;
+const relativeUpdateInterval = 20000;
 
 const secondaryItem = (departure: Departure) => {
   if (!departure.delayedMinutes && !departure.deviation) {
@@ -89,11 +93,12 @@ export default function StationDepartures({
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [lastUpdate, setLastUpdate] = useState(Date.now());
   const [visible, setVisible] = useState(true);
+  const [showTimeLeft, setShowTimeLeft] = useState(false);
 
   useEffect(() => {
     const newLines = uniqueLines(departures);
     if (!newLines.some((l) => l == selectedLine)) {
-    setSelectedLine(null);
+      setSelectedLine(null);
     }
     setLines(newLines);
     setLastUpdate(Date.now());
@@ -118,13 +123,17 @@ export default function StationDepartures({
     let timer: NodeJS.Timeout;
 
     if (visible) {
-      timer = setInterval(() => {
-        const time = Date.now();
-        setCurrentTime(time);
-        if (time - lastUpdate > updateInterval) {
-          refreshRequested();
-        }
-      }, timerInterval);
+      timer = setInterval(
+        () => {
+          const time = Date.now();
+          setCurrentTime(time);
+          const updateInterval = showTimeLeft ? relativeUpdateInterval : absoluteUpdateInterval;
+          if (time - lastUpdate > updateInterval) {
+            refreshRequested();
+          }
+        },
+        showTimeLeft ? relativeTimerInterval : absoluteTimerInterval
+      );
     }
 
     return () => {
@@ -132,7 +141,7 @@ export default function StationDepartures({
         clearInterval(timer);
       }
     };
-  }, [visible, lastUpdate]);
+  }, [visible, lastUpdate, showTimeLeft]);
 
   const selectedDepartures = (stop: StopDepartures): Departure[] => {
     return stop.departures.filter((d) => (selectedLine ?? d.lineNumber) == d.lineNumber);
@@ -146,11 +155,24 @@ export default function StationDepartures({
     );
   }
 
+  function timeLeft(date: Date): string {
+    // currentTime is in local time, but date is in "UTC time"
+    const diff = (date.getTime() - currentTime) / 1000 + date.getTimezoneOffset() * 60;
+    if (diff < 1) {
+      return 'Nu';
+    }
+
+    const minutes = Math.floor(diff / 60);
+    const seconds = Math.floor(diff % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
   return (
     <Box>
       <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between', mt: 1.5 }}>
         <Typography variant="h4">{departures.stationName}</Typography>
         <Checkbox
+          id="favorite"
           checked={favorite}
           icon={<FavoriteBorder />}
           checkedIcon={<Favorite />}
@@ -159,6 +181,15 @@ export default function StationDepartures({
       </Stack>
       <Stack direction="row" sx={{ width: '100%', justifyContent: 'space-between' }}>
         <Box sx={{ fontSize: 20 }}>Avgångar efter {time.substring(0, 5)}</Box>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch id="timeLeft" onChange={(event) => setShowTimeLeft(event.target.checked)} />
+            }
+            label="Tid kvar"
+            labelPlacement="start"
+          />
+        </FormGroup>
       </Stack>
       <ButtonGroup sx={{ display: lines.length < 2 ? 'none' : 'inline-block', mt: 1 }}>
         {lines.map((line) => (
@@ -195,7 +226,7 @@ export default function StationDepartures({
                   }}
                   secondaryAction={
                     <Typography variant="h5" sx={{ mr: 0.5 }}>
-                      {dep.expectedTime}
+                      {showTimeLeft ? timeLeft(dep.expectedDate) : dep.expectedTime}
                     </Typography>
                   }
                 >

@@ -60,7 +60,7 @@ function timeFormat(date: Date) {
 function deviation(deviations: any): Deviation | undefined {
   if (deviations.length > 0) {
     const dev = deviations.reduce((prev: any, current: any) => {
-      return (prev.importance_level > current.importance_level) ? prev : current;
+      return prev.importance_level > current.importance_level ? prev : current;
     });
 
     let type = DeviationType.Warning;
@@ -130,6 +130,7 @@ function parseRealtimeDepartures(data: any) {
       destination: item.destination,
       plannedTime: timeFormat(timeTableDate),
       expectedTime: timeFormat(expectedDate),
+      expectedDate: expectedDate,
       display: item.display,
       delayedMinutes: 0,
       deviation: deviation(item.deviations)
