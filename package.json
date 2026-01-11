@@ -7,8 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "release": "release-it",
-    "release-dry": "release-it --dry-run"
+    "preversion": "git diff --quiet || (echo 'Uncommitted changes. Commit or stash first.' && exit 1); npm run build; npm run lint",
+    "pushversion": "git push && git push --tags",
+    "release:patch": "npm version patch -m 'Release %s'",
+    "release:minor": "npm version minor -m 'Release %s'",
+    "release:major": "npm version major -m 'Release %s'",
+    "release:prerelease": "npm version prerelease --preid=rc"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -29,7 +33,6 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.35",
     "prettier": "^3.4.2",
-    "release-it": "^18.1.1",
     "typescript": "^5.7.3"
   }
 }
